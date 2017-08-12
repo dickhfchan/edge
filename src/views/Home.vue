@@ -58,6 +58,48 @@
   </v-layout>
 </template>
 <script>
+
+class DataSource {
+  wsUri = 'ws://54.255.227.246:7681/';
+  websocket;
+  connect() {
+    this.close()
+    const { wsUri } = this
+    this.websocket = new window.WebSocket(wsUri, 'datathread')
+    this.websocket.addEventListener('open', () => {
+      var j = {func: 1, name: 'root', pass: '1234'}
+    //    var j={func: 1, name:'joey', pass:'joey'};
+      var txt = JSON.stringify(j)
+      this.websocket.send(txt)
+    })
+    this.websocket.addEventListener('close', () => {
+      console.log('socket closed')
+    })
+    this.websocket.addEventListener('error', (e) => {
+      console.log('socket error')
+      throw e
+    })
+    let i = 0
+    this.websocket.addEventListener('message', (e) => {
+      if (i > 0) {
+        const data = JSON.parse(e.data)
+        if (i % 2 === 0) {
+          this.ongetdata1 && this.ongetdata1(data)
+        } else {
+          this.ongetdata2 && this.ongetdata2(data)
+        }
+      }
+      i++
+    })
+  }
+  close() {
+    if (this.websocket) {
+      this.websocket.close()
+      this.websocket = null
+    }
+  }
+}
+
 export default {
   data() {
     return {
@@ -185,11 +227,30 @@ export default {
       })
     },
   },
+  created() {
+    this.dataSource = new DataSource()
+    this.dataSource.connect()
+    this.dataSource.ongetdata1 = (data) => {
+      if (JSON.stringify(this.data1.Objects) === JSON.stringify(data.Objects)) {
+        delete data.Objects
+      } else {
+        this.object = null
+        this.item = null
+      }
+      Object.assign(this.data1, data)
+    }
+    this.dataSource.ongetdata2 = (data) => {
+      this.data2 = data
+    }
+  },
   mounted() {
     this.$nextTick(() => {
       document.title = this.title
     })
   },
+  beforeDestroy() {
+    this.dataSource && this.dataSource.close()
+  }
 }
 </script>
 <style lang="scss">
