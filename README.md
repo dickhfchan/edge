@@ -1,3 +1,12 @@
+# Install github in local PC/Mac
+# Sync the project with git  
+# Create a folder and under the folder
+# First download
+git clone git@github.com:dickhfchan/edge.git
+
+# update the project
+git pull git@github.com:dickhfchan/edge.git
+
 # edge
 
 > A Vue.js project
