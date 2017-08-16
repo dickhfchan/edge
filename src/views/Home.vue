@@ -1,64 +1,82 @@
 <template>
   <v-layout row wrap>
-    <v-flex xs4>
-      <v-select
-       v-bind:items="data1.Objects"
-       item-text="ObjectName"
-       v-model="object"
-       label="Object"
-       ></v-select>
+    <v-flex>
+      <div style="width:200px;" class="mr-3">
+        <v-select
+        :single-line="true"
+         v-bind:items="data1.objects2"
+         item-text="displayName"
+         v-model="object"
+         label="Object"
+         ></v-select>
+      </div>
+      <div style="width:200px;" class="mr-3">
+       <v-select
+       :disabled="!object"
+        v-bind:items="object ? object.Items : []"
+        item-text="plal"
+        v-model="item"
+        label="Item"
+        ></v-select>
+      </div>
+      <div style="align-items:center; padding:18px 0;">
+        <div class="" style="height: 30px; display: flex; align-items: flex-end;">
+          {{data1.DateTime}}
+        </div>
+      </div>
     </v-flex>
-    <v-flex xs4>
-      <v-select
-      :disabled="!object"
-       v-bind:items="object ? object.Items : []"
-       item-text="plal"
-       v-model="item"
-       label="Item"
-       ></v-select>
-    </v-flex>
-    <v-flex xs4 style="align-items:center;">
-      {{data1.DateTime}}
-    </v-flex>
+
     <v-flex xs12>
-      <v-data-table
-          :items="itemRows1"
-          hide-actions
-          class="elevation-1"
-        >
-        <template slot="items" scope="props">
-          <td class="">{{ getFldDisplayName1(props.item.name) }}</td>
-          <td class="text-xs-right">{{ getFldFormattedValue1(props.item.name, props.item.value) }}</td>
-        </template>
-      </v-data-table>
+      <div class="data1" style="width:400px;">
+        <v-data-table
+            :items="itemRows1"
+            hide-actions
+            class=""
+          >
+          <template slot="items" scope="props">
+            <td class="">{{ getFldDisplayName1(props.item.name) }}</td>
+            <td class="text-xs-right">{{ getFldFormattedValue1(props.item.name, props.item.value) }}</td>
+          </template>
+        </v-data-table>
+      </div>
     </v-flex>
+
     <v-flex xs12 class="mt-3">
-      <div class="">
-        <p>
-            PLCComm: {{data2.Status.PLCComm}}
-            LineMode: {{data2.Status.LineMode}}
-            AlarmStatus: {{data2.Status.AlarmStatus}}
-            NoAlarms: {{data2.Status.NoAlarms}}
-        </p>
+      <div class="w-100">
         <v-data-table
           :headers="headers2"
           :items="data2.Status.AlarmDetails"
           hide-actions
           class="elevation-1"
         >
-        <template slot="items" scope="props">
-          <td>{{ props.item.Category }}</td>
-          <td>{{ props.item.AlarmStatus }}</td>
-          <td>{{ props.item.AlarmMode }}</td>
-          <td>{{ props.item.Comments }}</td>
-        </template>
-      </v-data-table>
+          <template slot="items" scope="props">
+            <td>{{ props.item.Category }}</td>
+            <td class="text-xs-right">{{ props.item.AlarmStatus }}</td>
+            <td class="text-xs-right">{{ props.item.AlarmMode }}</td>
+            <td class="text-xs-right">{{ props.item.Comments }}</td>
+          </template>
+        </v-data-table>
+        <p class="mt-3">
+            <span class="mr-5">PLCComm: {{data2.Status.PLCComm}}</span>
+            <span class="mr-5">LineMode: {{data2.Status.LineMode}}</span>
+            <span class="mr-5">AlarmStatus: {{data2.Status.AlarmStatus}}</span>
+            <span class="mr-5">NoAlarms: {{data2.Status.NoAlarms}}</span>
+        </p>
       </div>
     </v-flex>
   </v-layout>
 </template>
 <script>
-
+// const websocket = new window.WebSocket('ws://54.255.227.246:7681/', 'configuration')
+// websocket.addEventListener('open', (e) => {
+//   var j = {func: 1, name: 'root', pass: '1234'}
+//   //    var j={func: 1, name:'joey', pass:'joey'};
+//   var txt = JSON.stringify(j)
+//   this.websocket.send(txt)
+// })
+// websocket.addEventListener('message', (e) => {
+//   console.log(e);
+// })
 class DataSource {
   wsUri = 'ws://54.255.227.246:7681/';
   websocket;
@@ -907,6 +925,7 @@ export default {
     return {
       title: 'Home',
       data1: {
+        objects2: [],
         'TimeStamp': 1502339657000,
         'DateTime': '12:34:17 10 Aug 2017',
         'Objects': [
@@ -1024,9 +1043,24 @@ export default {
       })
     },
     headers2() {
-      return Object.keys(this.data2.Status.AlarmDetails[0]).map(key => {
+      const r = Object.keys(this.data2.Status.AlarmDetails[0]).map(key => {
         return { text: key, value: key }
       })
+      r[0].align = 'left'
+      return r
+    },
+  },
+  watch: {
+    'data1.Objects': {
+      immediate: true,
+      handler() {
+        this.data1.Objects.forEach(obj => {
+          const info = (this.configuration || configuration).objects.find(item => item.objaddr === obj.ObjectName)
+          this.$set(obj, 'info', info)
+          this.$set(obj, 'displayName', info.objname)
+        })
+        this.data1.objects2 = this.data1.Objects
+      }
     },
   },
   created() {
@@ -1055,17 +1089,23 @@ export default {
   },
   methods: {
     getFldDisplayName1(fldName) {
-      const obj = configuration.objects.find(item => item.objname === this.object.ObjectName)
-      const fld = obj.objfield.find(item => item.fldsname === fldName)
+      const fld = this.object.info.objfield.find(item => item.fldsname === fldName)
       return fld.fldfname
     },
     getFldFormattedValue1(fldName, val) {
-      const obj = configuration.objects.find(item => item.objname === this.object.ObjectName)
-      const fld = obj.objfield.find(item => item.fldsname === fldName)
+      const fld = this.object.info.objfield.find(item => item.fldsname === fldName)
       return `${val.toFixed(fld.flddecim)} ${fld.fldunits}`
     },
   },
 }
 </script>
 <style lang="scss">
+.data1 {
+  > .table__overflow {
+    border: 1px solid #ccc;
+    thead{
+      display: none;
+    }
+  }
+}
 </style>
