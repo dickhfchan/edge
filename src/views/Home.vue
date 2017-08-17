@@ -80,10 +80,11 @@
 class DataSource {
   wsUri = 'ws://54.255.227.246:7681/';
   websocket;
+  type = 'datathread'; // datathread/configuration
   connect() {
     this.close()
     const { wsUri } = this
-    this.websocket = new window.WebSocket(wsUri, 'datathread')
+    this.websocket = new window.WebSocket(wsUri, this.type)
     // this.websocket2 = new window.WebSocket(wsUri, 'configuration')
     // this.websocket2.addEventListener('message', e => {
     //   console.log(e)
@@ -103,15 +104,22 @@ class DataSource {
     })
     let i = 0
     this.websocket.addEventListener('message', (e) => {
-      if (i > 0) {
-        const data = JSON.parse(e.data)
-        if (i % 2 === 0) {
-          this.ongetdata1 && this.ongetdata1(data)
-        } else {
-          this.ongetdata2 && this.ongetdata2(data)
+      const data = JSON.parse(e.data)
+      if (this.type === 'datathread') {
+        if (i > 1) {
+          if (i % 2 === 1) {
+            this.ongetdata1 && this.ongetdata1(data)
+          } else {
+            this.ongetdata2 && this.ongetdata2(data)
+          }
         }
+        if (i < 5) {
+          console.log(data);
+        }
+        i++
+      } else if (this.type === 'configuration') {
+        this.ongetdata && this.ongetdata(data)
       }
-      i++
     })
   }
   close() {
@@ -1052,10 +1060,10 @@ export default {
   },
   watch: {
     'data1.Objects': {
-      immediate: true,
       handler() {
         this.data1.Objects.forEach(obj => {
           const info = (this.configuration || configuration).objects.find(item => item.objaddr === obj.ObjectName)
+          console.log(info);
           this.$set(obj, 'info', info)
           this.$set(obj, 'displayName', info.objname)
         })
@@ -1064,19 +1072,29 @@ export default {
     },
   },
   created() {
-    this.dataSource = new DataSource()
-    this.dataSource.connect()
-    this.dataSource.ongetdata1 = (data) => {
-      if (JSON.stringify(this.data1.Objects) === JSON.stringify(data.Objects)) {
-        delete data.Objects
-      } else {
-        this.object = null
-        this.item = null
+    this.configDataSource = new DataSource()
+    this.configDataSource.type = 'configuration'
+    this.configDataSource.connect()
+    this.configDataSource.ongetdata = data => {
+      this.configuration = data
+      this.configDataSource.close()
+      console.log('configuration got')
+      console.log(this.configuration)
+      this.dataSource = new DataSource()
+      this.dataSource.connect()
+      this.dataSource.ongetdata1 = (data) => {
+        if (JSON.stringify(this.data1.Objects) === JSON.stringify(data.Objects)) {
+          delete data.Objects
+        } else {
+          this.object = null
+          this.item = null
+          console.log(data)
+        }
+        Object.assign(this.data1, data)
       }
-      Object.assign(this.data1, data)
-    }
-    this.dataSource.ongetdata2 = (data) => {
-      this.data2 = data
+      this.dataSource.ongetdata2 = (data) => {
+        this.data2 = data
+      }
     }
   },
   mounted() {
@@ -1085,6 +1103,7 @@ export default {
     })
   },
   beforeDestroy() {
+    this.configDataSource && this.configDataSource.close()
     this.dataSource && this.dataSource.close()
   },
   methods: {
