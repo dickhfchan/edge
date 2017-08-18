@@ -40,7 +40,7 @@
       </div>
     </v-flex>
 
-    <!-- <v-flex xs12 class="mt-3">
+    <v-flex xs12 class="mt-3">
       <div class="w-100">
         <v-data-table
           :headers="headers2"
@@ -62,7 +62,7 @@
             <span class="mr-5">NoAlarms: {{data2.Status.NoAlarms}}</span>
         </p>
       </div>
-    </v-flex> -->
+    </v-flex>
 
     <div class="absolute-backdrop center-wrapper" v-if="!configuration">
       <v-progress-circular indeterminate class="primary--text"></v-progress-circular>
@@ -126,6 +126,54 @@ export default {
       item1: null,
       cache: {
         data1: {}
+      },
+      data2: {
+        'TimeStamp': 1502339232000,
+        'DateTime': '12:27:12 10 Aug 2017',
+        'Status': {
+          'PLCComm': 'UP',
+          'LineMode': 'AUTO',
+          'AlarmStatus': 'UNACKALARMS',
+          'NoAlarms': 6,
+          'AlarmDetails': [
+            {
+              'Category': 'alarm',
+              'AlarmStatus': 'ON',
+              'AlarmMode': 'UNACKALARM',
+              'Comments': 'Temperature 1 Alarm'
+            },
+            {
+              'Category': 'alarm',
+              'AlarmStatus': 'ON',
+              'AlarmMode': 'UNACKALARM',
+              'Comments': 'Temperature 2 Alarm'
+            },
+            {
+              'Category': 'alarm',
+              'AlarmStatus': 'ON',
+              'AlarmMode': 'UNACKALARM',
+              'Comments': 'Temperature 3 Alarm'
+            },
+            {
+              'Category': 'alarm',
+              'AlarmStatus': 'ON',
+              'AlarmMode': 'UNACKALARM',
+              'Comments': 'Temperature 4 Alarm'
+            },
+            {
+              'Category': 'alarm',
+              'AlarmStatus': 'ON',
+              'AlarmMode': 'UNACKALARM',
+              'Comments': 'Temperature 5 Alarm'
+            },
+            {
+              'Category': 'alarm',
+              'AlarmStatus': 'ON',
+              'AlarmMode': 'UNACKALARM',
+              'Comments': 'Temperature 6 Alarm'
+            }
+          ]
+        }
       },
     }
   },
