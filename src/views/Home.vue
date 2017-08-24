@@ -20,7 +20,7 @@
       </div>
       <div style="align-items:center; padding:18px 0;">
         <div class="" style="height: 30px; display: flex; align-items: flex-end;">
-          <!-- {{data1.DateTime}} -->
+          {{data1.datetime}}
         </div>
       </div>
     </v-flex>
@@ -40,7 +40,7 @@
       </div>
     </v-flex>
 
-    <v-flex xs12 class="mt-3">
+    <v-flex xs12 class="mt-3" v-if="data2">
       <div class="w-100">
         <v-data-table
           :headers="headers2"
@@ -64,7 +64,7 @@
       </div>
     </v-flex>
 
-    <div class="absolute-backdrop center-wrapper" v-if="!configuration">
+    <div class="absolute-backdrop center-wrapper" v-if="loading">
       <v-progress-circular indeterminate class="primary--text"></v-progress-circular>
     </div>
   </v-layout>
@@ -121,60 +121,15 @@ export default {
   data() {
     return {
       title: 'Home',
+      loading: true,
       configuration: null,
+      originData1: null,
       object1: null,
       item1: null,
       cache: {
         data1: {}
       },
-      data2: {
-        'TimeStamp': 1502339232000,
-        'DateTime': '12:27:12 10 Aug 2017',
-        'Status': {
-          'PLCComm': 'UP',
-          'LineMode': 'AUTO',
-          'AlarmStatus': 'UNACKALARMS',
-          'NoAlarms': 6,
-          'AlarmDetails': [
-            {
-              'Category': 'alarm',
-              'AlarmStatus': 'ON',
-              'AlarmMode': 'UNACKALARM',
-              'Comments': 'Temperature 1 Alarm'
-            },
-            {
-              'Category': 'alarm',
-              'AlarmStatus': 'ON',
-              'AlarmMode': 'UNACKALARM',
-              'Comments': 'Temperature 2 Alarm'
-            },
-            {
-              'Category': 'alarm',
-              'AlarmStatus': 'ON',
-              'AlarmMode': 'UNACKALARM',
-              'Comments': 'Temperature 3 Alarm'
-            },
-            {
-              'Category': 'alarm',
-              'AlarmStatus': 'ON',
-              'AlarmMode': 'UNACKALARM',
-              'Comments': 'Temperature 4 Alarm'
-            },
-            {
-              'Category': 'alarm',
-              'AlarmStatus': 'ON',
-              'AlarmMode': 'UNACKALARM',
-              'Comments': 'Temperature 5 Alarm'
-            },
-            {
-              'Category': 'alarm',
-              'AlarmStatus': 'ON',
-              'AlarmMode': 'UNACKALARM',
-              'Comments': 'Temperature 6 Alarm'
-            }
-          ]
-        }
-      },
+      data2: null,
     }
   },
   computed: {
@@ -223,17 +178,57 @@ export default {
     },
   },
   watch: {
+    originData1() {
+      this.mergeOriginData1ToData1()
+    },
+    data1() {
+      this.mergeOriginData1ToData1()
+    },
   },
   created() {
-    this.configDataSource = new DataSource()
-    this.configDataSource.type = 'configuration'
-    this.configDataSource.connect()
-    this.configDataSource.ongetdata = data => {
-      this.configuration = data
-      this.configDataSource.close()
-      console.log('configuration got')
-      console.log(this.configuration)
-    }
+    const configReady = new Promise((resolve, reject) => {
+      this.configDataSource = new DataSource()
+      this.configDataSource.type = 'configuration'
+      this.configDataSource.connect()
+      this.configDataSource.ongetdata = data => {
+        this.configuration = data
+        this.configDataSource.close()
+        console.log('configuration got')
+        resolve()
+      }
+    })
+
+    const dataSourceGetOnce = new Promise((resolve, reject) => {
+      this.dataSource = new DataSource()
+      let data1GetCount = 0
+      let data2GetCount = 0
+      let resolved = false
+      const getOnce = () => data1GetCount > 0 && data2GetCount > 0
+      const checkForResolve = () => {
+        if (getOnce()) {
+          if (!resolved) {
+            resolved = true
+            resolve()
+          }
+        }
+      }
+      this.dataSource.ongetdata1 = data => {
+        this.originData1 = data
+        data1GetCount++
+        checkForResolve()
+        console.log('data1 got')
+      }
+      this.dataSource.ongetdata2 = data => {
+        this.data2 = data
+        data2GetCount++
+        checkForResolve()
+        console.log('data2 got')
+      }
+      this.dataSource.connect()
+    })
+    Promise.all([configReady, dataSourceGetOnce]).then(() => {
+      this.loading = false
+    })
   },
   mounted() {
     this.$nextTick(() => {
@@ -244,6 +239,33 @@ export default {
     this.configDataSource && this.configDataSource.close()
   },
   methods: {
+    mergeOriginData1ToData1() {
+      if (!this.data1 || !this.data1.objects) {
+        return
+      }
+      if (!this.originData1) {
+        return
+      }
+      const data = this.data1
+      const originData = this.originData1
+      this.$set(data, 'timestamp', originData.TimeStamp)
+      this.$set(data, 'datetime', originData.DateTime)
+      originData.Objects.forEach(item => {
+        const obj = data.objects.find(v => v.objaddr === item.ObjectName)
+        if (obj) {
+          const tempItems = []
+          item.Items.forEach((item2, i) => {
+            tempItems.push({
+              text: i + 1,
+              data: item2
+            })
+          })
+          if (JSON.stringify(tempItems) !== JSON.stringify(obj.items)) {
+            obj.items = tempItems
+          }
+        }
+      })
+    },
   },
 }
 </script>
