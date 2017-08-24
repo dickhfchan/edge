@@ -72,7 +72,7 @@
 <script>
 
 class DataSource {
-  wsUri = 'ws://54.255.227.246:7681/';
+  wsUri = 'ws://54.169.111.193:7681/';
   websocket;
   type = 'datathread'; // datathread/configuration
   connect() {
