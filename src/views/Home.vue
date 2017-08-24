@@ -49,10 +49,7 @@
           class="elevation-1"
         >
           <template slot="items" scope="props">
-            <td>{{ props.item.Category }}</td>
-            <td class="text-xs-right">{{ props.item.AlarmStatus }}</td>
-            <td class="text-xs-right">{{ props.item.AlarmMode }}</td>
-            <td class="text-xs-right">{{ props.item.Comments }}</td>
+            <td v-for="(header, i) in headers2" :class="{'text-xs-right': i > 0}">{{ props.item[header.value] }}</td>
           </template>
         </v-data-table>
         <p class="mt-3">
@@ -146,7 +143,7 @@ export default {
         obj.text = obj.objdesc
         // set fileds
         obj.fileds = obj.objfield.map(fld => {
-          return { name: fld.fldsname, text: fld.fldfname }
+          return { name: fld.fldsname, text: fld.fldfname, original: fld }
         })
         // set items
         obj.items = []
@@ -163,7 +160,12 @@ export default {
     itemRows1() {
       try {
         return this.object1.fileds.map(fld => {
-          return { text: fld.text, value: this.item1.data[fld.name] }
+          let val = this.item1.data[fld.name] || 0
+          val = val.toFixed(fld.flddecim || 0)
+          if (fld.fldunits) {
+            val = `${val} ${fld.fldunits}`
+          }
+          return { text: fld.text, value: val }
         })
       } catch (e) {
         return []
