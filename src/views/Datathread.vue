@@ -7,6 +7,7 @@
          v-bind:items="data1.objects"
          item-text="text"
          v-model="object1"
+         @change="item1=null"
          label="Object"
          ></v-select>
       </div>
@@ -117,7 +118,7 @@ class DataSource {
 export default {
   data() {
     return {
-      title: 'Home',
+      title: 'Datathread',
       loading: true,
       configuration: null,
       originData1: null,
@@ -159,14 +160,29 @@ export default {
     },
     itemRows1() {
       try {
-        return this.object1.fileds.map(fld => {
+        const flds = this.object1.fileds.slice(0) // copy
+        const rows = []
+        if (this.object1.objaddr === 'temp') {
+          const top3 = flds.splice(0, 3)
+          const dataInConfig = this.configuration.config[this.data1.objects.indexOf(this.object1)].data[this.object1.items.indexOf(this.item1)].datafields
+          top3.forEach(fld => {
+            rows.push({text: fld.text, value: dataInConfig[fld.name]})
+          })
+        }
+        return rows.concat(flds.map(fld => {
+          const oFld = fld.original
           let val = this.item1.data[fld.name] || 0
-          val = val.toFixed(fld.flddecim || 0)
-          if (fld.fldunits) {
-            val = `${val} ${fld.fldunits}`
+          if (val < oFld.fldminval) {
+            val = oFld.fldminval
+          } else if (val > oFld.fldmaxval) {
+            val = oFld.fldmaxval
+          }
+          val = val.toFixed(oFld.flddecim || 0)
+          if (oFld.fldunits) {
+            val = `${val} ${oFld.fldunits}`
           }
           return { text: fld.text, value: val }
-        })
+        }))
       } catch (e) {
         return []
       }
@@ -218,13 +234,13 @@ export default {
         this.originData1 = data
         data1GetCount++
         checkForResolve()
-        console.log('data1 got')
+        // console.log('data1 got')
       }
       this.dataSource.ongetdata2 = data => {
         this.data2 = data
         data2GetCount++
         checkForResolve()
-        console.log('data2 got')
+        // console.log('data2 got')
       }
       this.dataSource.connect()
     })

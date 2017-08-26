@@ -1,5 +1,5 @@
 export default [
-  { path: '/home', name: 'home', component: resolve => require(['../views/Home.vue'], resolve) },
+  { path: '/datathread', name: 'datathread', component: resolve => require(['../views/Datathread.vue'], resolve) },
   //
-  { path: '*', redirect: { name: 'home' } }
+  { path: '*', redirect: { name: 'datathread' } }
 ]
