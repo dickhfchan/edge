@@ -68,7 +68,7 @@
   </v-layout>
 </template>
 <script>
-
+import { isNumeric } from 'helper-js'
 class DataSource {
   wsUri = 'ws://54.169.111.193:7681/';
   websocket;
@@ -172,14 +172,16 @@ export default {
         return rows.concat(flds.map(fld => {
           const oFld = fld.original
           let val = this.item1.data[fld.name] || 0
-          if (val < oFld.fldminval) {
-            val = oFld.fldminval
-          } else if (val > oFld.fldmaxval) {
-            val = oFld.fldmaxval
-          }
-          val = val.toFixed(oFld.flddecim || 0)
-          if (oFld.fldunits) {
-            val = `${val} ${oFld.fldunits}`
+          if (isNumeric(val)) {
+            if (val < oFld.fldminval) {
+              val = oFld.fldminval
+            } else if (val > oFld.fldmaxval) {
+              val = oFld.fldmaxval
+            }
+            val = parseFloat(val).toFixed(oFld.flddecim || 0)
+            if (oFld.fldunits) {
+              val = `${val} ${oFld.fldunits}`
+            }
           }
           return { text: fld.text, value: val }
         }))
