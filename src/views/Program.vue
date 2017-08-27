@@ -8,7 +8,7 @@
          item-text="name"
          item-value="subr"
          v-model="subr"
-         label="Programe"
+         label="Program"
          ></v-select>
       </div>
     </v-flex>
