@@ -69,51 +69,7 @@
 </template>
 <script>
 import { isNumeric } from 'helper-js'
-class DataSource {
-  wsUri = 'ws://54.169.111.193:7681/';
-  websocket;
-  type = 'datathread'; // datathread/configuration
-  connect() {
-    this.close()
-    const { wsUri } = this
-    this.websocket = new window.WebSocket(wsUri, this.type)
-    this.websocket.addEventListener('open', () => {
-      var j = {func: 1, name: 'root', pass: '1234'}
-    //    var j={func: 1, name:'joey', pass:'joey'};
-      var txt = JSON.stringify(j)
-      this.websocket.send(txt)
-    })
-    this.websocket.addEventListener('close', () => {
-      console.log('socket closed')
-    })
-    this.websocket.addEventListener('error', (e) => {
-      console.log('socket error')
-      throw e
-    })
-    let i = 0
-    this.websocket.addEventListener('message', (e) => {
-      const data = JSON.parse(e.data)
-      if (this.type === 'datathread') {
-        if (i > 1) {
-          if (i % 2 === 1) {
-            this.ongetdata1 && this.ongetdata1(data)
-          } else {
-            this.ongetdata2 && this.ongetdata2(data)
-          }
-        }
-        i++
-      } else if (this.type === 'configuration') {
-        this.ongetdata && this.ongetdata(data)
-      }
-    })
-  }
-  close() {
-    if (this.websocket) {
-      this.websocket.close()
-      this.websocket = null
-    }
-  }
-}
+import DataSource from '@/DataSource'
 
 export default {
   data() {
@@ -257,6 +213,7 @@ export default {
   },
   beforeDestroy() {
     this.configDataSource && this.configDataSource.close()
+    this.dataSource && this.dataSource.close()
   },
   methods: {
     mergeOriginData1ToData1() {
