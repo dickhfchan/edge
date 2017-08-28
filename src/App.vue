@@ -1,34 +1,44 @@
 <template>
 <v-app id="app" standalone>
-  <v-navigation-drawer
-    class="pb-0"
-    persistent
-    absolute
-    height="100%"
-    clipped
-    enable-resize-watcher
-    v-model="drawer"
-  >
-    <v-list dense>
-      <v-list-tile v-for="item in items" :key="item.title" :href="item.route && $router.resolve(item.route).href" @click.prevent="item.route && $router.push(item.route)">
-        <v-list-tile-action>
-          <v-icon>{{ item.icon || 'panorama_fish_eye' }}</v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
-  </v-navigation-drawer>
-  <v-toolbar fixed class="cyan" dark>
-    <v-toolbar-side-icon @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
-    <v-toolbar-title>{{$store.state.brand}}</v-toolbar-title>
-  </v-toolbar>
-  <main>
-    <v-container fluid>
-      <router-view></router-view>
-    </v-container>
-  </main>
+  <!-- initialization -->
+  <div class="absolute-backdrop center-wrapper" v-if="!$store.state.initialized">
+    <v-progress-circular indeterminate v-bind:size="50" class="primary--text"></v-progress-circular>
+  </div>
+  <!-- initialized -->
+  <template v-else>
+    <router-view v-if="$route.name==='login'"></router-view>
+    <template v-else-if="$store.state.authenticated">
+      <v-navigation-drawer
+        class="pb-0"
+        persistent
+        absolute
+        height="100%"
+        clipped
+        enable-resize-watcher
+        v-model="drawer"
+      >
+        <v-list dense>
+          <v-list-tile v-for="item in items" :key="item.title" :href="item.route && $router.resolve(item.route).href" @click.prevent="item.route && $router.push(item.route)">
+            <v-list-tile-action>
+              <v-icon>{{ item.icon || 'panorama_fish_eye' }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </v-navigation-drawer>
+      <v-toolbar fixed class="cyan" dark>
+        <v-toolbar-side-icon @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
+        <v-toolbar-title>{{$store.state.brand}}</v-toolbar-title>
+      </v-toolbar>
+      <main>
+        <v-container fluid>
+          <router-view></router-view>
+        </v-container>
+      </main>
+    </template>
+  </template>
 </v-app>
 </template>
 
@@ -46,7 +56,10 @@ export default {
       mini: false,
       right: null
     }
-  }
+  },
+  created() {
+    this.$store.dispatch('init', this)
+  },
 }
 </script>
 

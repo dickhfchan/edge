@@ -1,15 +1,21 @@
+let username, password
 export default class DataSource {
   wsUri = 'ws://54.169.111.193:7681/';
   websocket;
   type = 'datathread'; // datathread/configuration
   func; // for services
+  username;
+  password;
   connect() {
     this.close()
     const { wsUri } = this
     this.websocket = new window.WebSocket(wsUri, this.type)
     this.websocket.addEventListener('open', () => {
-      var j = {func: 1, name: 'root', pass: '1234'}
-    //    var j={func: 1, name:'joey', pass:'joey'};
+      if (this.username) {
+        username = this.username
+        password = this.password
+      }
+      var j = {func: 1, name: username, pass: password}
       var txt = JSON.stringify(j)
       this.websocket.send(txt)
     })
@@ -23,6 +29,9 @@ export default class DataSource {
     let i = 0
     this.websocket.addEventListener('message', (e) => {
       const data = JSON.parse(e.data)
+      if (i === 0) {
+        this.onlogin && this.onlogin(data)
+      }
       switch (this.type) {
         case 'datathread':
           if (i > 1) {
@@ -55,6 +64,6 @@ export default class DataSource {
     }
   }
   send(msg) {
-    return this.websocket.send(msg)
+    return this.websocket && this.websocket.send(msg)
   }
 }
