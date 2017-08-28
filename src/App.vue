@@ -1,14 +1,15 @@
 <template>
 <v-app id="app" standalone>
   <v-navigation-drawer
-    temporary
-    v-model="drawer"
-    :mini-variant.sync="mini"
-    light
-    overflow
+    class="pb-0"
+    persistent
     absolute
+    height="100%"
+    clipped
+    enable-resize-watcher
+    v-model="drawer"
   >
-    <v-list class="pt-0" dense>
+    <v-list dense>
       <v-list-tile v-for="item in items" :key="item.title" :href="item.route && $router.resolve(item.route).href" @click.prevent="item.route && $router.push(item.route)">
         <v-list-tile-action>
           <v-icon>{{ item.icon || 'panorama_fish_eye' }}</v-icon>
