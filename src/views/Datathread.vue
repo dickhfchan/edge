@@ -39,6 +39,9 @@
           </template>
         </v-data-table>
       </div>
+      <div class="flex-1 ml-4">
+        <canvas class="temperature-chart"></canvas>
+      </div>
     </v-flex>
 
     <v-flex xs12 class="mt-3" v-if="data2">
@@ -69,7 +72,9 @@
 </template>
 <script>
 import { isNumeric } from 'helper-js'
+import {format} from 'date-functions'
 import DataSource from '@/DataSource'
+import Chart from 'chart.js'
 
 export default {
   data() {
@@ -84,6 +89,7 @@ export default {
         data1: {}
       },
       data2: null,
+      temperatureChartMaxTimestampCount: 20,
     }
   },
   computed: {
@@ -128,6 +134,7 @@ export default {
         return rows.concat(flds.map(fld => {
           const oFld = fld.original
           let val = this.item1.data[fld.name] || 0
+          const originalValue = val
           if (isNumeric(val)) {
             if (val < oFld.fldminval) {
               val = oFld.fldminval
@@ -139,7 +146,7 @@ export default {
               val = `${val} ${oFld.fldunits}`
             }
           }
-          return { text: fld.text, value: val }
+          return { text: fld.text, value: val, originalValue }
         }))
       } catch (e) {
         return []
@@ -156,9 +163,24 @@ export default {
   watch: {
     originData1() {
       this.mergeOriginData1ToData1()
+      this.$emit('data1Merged')
     },
     data1() {
       this.mergeOriginData1ToData1()
+    },
+    object1() {
+      if (!this.object1 || this.object1.objaddr !== 'temp') {
+        this.destroyTemperatureChart()
+      }
+    },
+    item1() {
+      if (this.object1 && this.object1.objaddr === 'temp') {
+        if (!this.item1) {
+          this.destroyTemperatureChart()
+        } else {
+          this.renderTemperatureChart()
+        }
+      }
     },
   },
   created() {
@@ -205,6 +227,7 @@ export default {
     Promise.all([configReady, dataSourceGetOnce]).then(() => {
       this.loading = false
     })
+    this.$on('data1Merged', this.checkAndUpdateTemperatureChart)
   },
   mounted() {
     this.$nextTick(() => {
@@ -242,6 +265,69 @@ export default {
           }
         }
       })
+    },
+    renderTemperatureChart() {
+      const chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(231,233,237)'
+      }
+      const colors = Object.values(chartColors)
+      const ctx = this.$el.querySelector('.temperature-chart').getContext('2d')
+      const rows = this.itemRows1.slice(3)
+      this.temperatureChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [format(new Date(this.data1.datetime), 'mm:ss')],
+          datasets: rows.map(row => {
+            const color = colors.shift()
+            return {
+              label: row.text,
+              fill: false,
+              borderColor: color,
+              backgroundColor: color,
+              data: [row.originalValue]
+            }
+          })
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              stacked: true
+            }]
+          }
+        }
+      })
+    },
+    checkAndUpdateTemperatureChart() {
+      if (this.temperatureChart) {
+        const chart = this.temperatureChart
+        chart.data.labels.push(format(new Date(this.data1.datetime), 'mm:ss'))
+        this.itemRows1.slice(3)
+        chart.data.datasets.forEach((dataset, i) => {
+          dataset.data.push(this.itemRows1[i + 3].originalValue)
+        })
+        const max = this.temperatureChartMaxTimestampCount
+        const len = chart.data.labels.length
+        const diff = len - max
+        if (diff > 0) {
+          chart.data.labels.splice(0, 1)
+          chart.data.datasets.forEach((dataset, i) => {
+            dataset.data.splice(0, 1)
+          })
+        }
+        chart.update()
+      }
+    },
+    destroyTemperatureChart() {
+      if (this.temperatureChart) {
+        this.temperatureChart.destroy()
+        this.temperatureChart = null
+      }
     },
   },
 }
