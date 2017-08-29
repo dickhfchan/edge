@@ -289,17 +289,11 @@ export default {
               fill: false,
               borderColor: color,
               backgroundColor: color,
-              data: [row.originalValue]
+              data: [row.originalValue],
+              yAxesID: 'y-axis-1',
             }
           })
         },
-        options: {
-          scales: {
-            yAxes: [{
-              stacked: true
-            }]
-          }
-        }
       })
     },
     checkAndUpdateTemperatureChart() {
