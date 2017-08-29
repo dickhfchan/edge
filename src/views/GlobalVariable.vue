@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap class="global-variable">
+  <v-layout row wrap class="global-variable ma-3">
     <v-flex xs12 class="mb-1">
       <v-btn primary dark class="ml-0" @click="save">Save</v-btn>
       <v-btn @click="newItem">New</v-btn>

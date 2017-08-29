@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap>
+  <v-layout row wrap class="ma-3">
     <v-flex>
       <div style="width:250px;" class="mr-3">
         <v-select

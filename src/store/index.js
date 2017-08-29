@@ -46,10 +46,6 @@ const store = new Vuex.Store({
         dt.connect()
       })
     },
-    logout({commit, state}) {
-      state.authenticated = false
-      state.user = null
-    },
   },
   // strict: config.isDevelopment
   // plugins: config.isDevelopment ? [createLogger()] : []

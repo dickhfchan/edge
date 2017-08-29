@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap>
+  <v-layout row wrap class="ma-3">
     <v-flex xs12 class="mb-3" v-if="data2">
       <div class="w-100">
         <v-data-table

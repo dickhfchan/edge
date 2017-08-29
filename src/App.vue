@@ -1,5 +1,5 @@
 <template>
-<v-app id="app" standalone toolbar>
+<v-app id="app" standalone toolbar class="flex flex-col">
   <!-- initialization -->
   <div class="absolute-backdrop center-wrapper" v-if="!$store.state.initialized">
     <v-progress-circular indeterminate v-bind:size="50" class="primary--text"></v-progress-circular>
@@ -35,7 +35,7 @@
           </v-list-tile>
         </v-list>
       </v-navigation-drawer> -->
-
+      <!-- left sidebar -->
       <v-navigation-drawer
         temporary
         v-model="drawer"
@@ -61,14 +61,65 @@
         </v-list>
       </v-navigation-drawer>
 
+      <!-- right sidebar -->
+      <v-navigation-drawer
+        temporary
+        v-model="rightDrawer"
+        light
+        overflow
+        absolute
+        right
+        class="right-sidebar"
+      >
+        <v-toolbar class="cyan">
+          <v-icon>person</v-icon>
+          <v-toolbar-title class="white--text">Profile</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click.native="rightDrawer=false">
+            <v-icon>chevron_right</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <div class="pa-3">
+          Name: {{state.user.username}}
+          <br>
+          <div class="">
+            <v-btn light class="ml-0" @click.native.stop="changePasswordVisible=!changePasswordVisible">Change Password</v-btn>
+          </div>
+          <form @submit.prevent="changePassword" class="change-password" v-show="changePasswordVisible">
+            <v-text-field
+              type="password"
+              label="Old Password"
+              v-model.trim="oldPassword"
+              :rules="[rules.required]"
+             ></v-text-field>
+             <v-text-field
+               type="password"
+               label="New Password"
+               v-model.trim="newPassword"
+               :rules="[rules.required]"
+              ></v-text-field>
+              <v-text-field
+                type="password"
+                label="Confirm New Password"
+                v-model.trim="newPassword2"
+                :rules="[rules.required]"
+               ></v-text-field>
+               <v-btn primary dark class="ml-0" type="submit">Save</v-btn>
+          </form>
+           <div class="">
+             <v-btn warning dark class="ml-0" @click.native="logout">Logout</v-btn>
+           </div>
+        </div>
+      </v-navigation-drawer>
+
       <v-toolbar fixed class="cyan" dark>
-        <v-toolbar-side-icon @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
+        <v-toolbar-side-icon @click.native.stop="drawer=!drawer"></v-toolbar-side-icon>
         <v-toolbar-title>{{$store.state.brand}}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn flat @click.native.stop="rightDrawer=!rightDrawer">{{state.user.username}}</v-btn>
       </v-toolbar>
-      <main>
-        <v-container fluid>
-          <router-view></router-view>
-        </v-container>
+      <main class="flex-1">
+        <router-view></router-view>
       </main>
     </template>
   </template>
@@ -100,11 +151,14 @@
 </template>
 
 <script>
+import {newService} from '@/utils.js'
+
 export default {
   name: 'app',
   data () {
     return {
       drawer: null,
+      rightDrawer: null,
       items: [
          { title: 'Data Thread', icon: 'dashboard', route: {name: 'datathread'} },
          { title: 'Global Variable', route: {name: 'globalVariable'} },
@@ -112,6 +166,15 @@ export default {
       ],
       mini: false,
       right: null,
+      // right sidebar
+      changePasswordVisible: false,
+      oldPassword: null,
+      newPassword: null,
+      newPassword2: null,
+      rules: {
+        required: (value) => !!value || 'Required',
+      },
+      // globale
       alert: {
         visible: false,
         content: null,
@@ -130,6 +193,45 @@ export default {
         },
       }
     }
+  },
+  computed: {
+    state() { return this.$store.state },
+  },
+  methods: {
+    logout() {
+      window.localStorage.removeItem('user')
+      this.state.authenticated = null
+      this.$router.push({name: 'login'})
+      this.state.user = null
+    },
+    changePassword() {
+      const {oldPassword, newPassword, newPassword2} = this
+      if (!oldPassword || !newPassword || !newPassword2) {
+        this.$alert('Required field can\'t be empty')
+        return
+      }
+      if (newPassword !== newPassword2) {
+        this.$alert('The password confirmation does not match')
+        return
+      }
+      newService({func: 3, name: this.$store.state.user.username, pass: oldPassword, npwd: newPassword}).then(r => {
+        console.log(r)
+        if (r.err > 0) {
+          this.$alert('The change password operation failed')
+        } else {
+          this.$alert('The password is successfully changed')
+          this.changePasswordVisible = false
+          this.oldPassword = null
+          this.newPassword = null
+          this.newPassword2 = null
+          const userStore = {
+            username: this.state.user.username,
+            password: newPassword,
+          }
+          window.localStorage.setItem('user', JSON.stringify(userStore))
+        }
+      })
+    },
   },
   created() {
     // init
@@ -199,6 +301,36 @@ body{
   }
   .list__tile__title{
     font-size: 15px;
+  }
+}
+
+
+html{
+  overflow: hidden;
+}
+html, body, #app{
+  width: 100%;
+  height: 100%;
+}
+#app{
+  > .toolbar{
+    position: relative;
+  }
+  > main{
+    padding: 0;
+  }
+}
+.right-sidebar{
+  .toolbar{
+    .icon, .btn__content .icon{
+      color: #fff;
+    }
+  }
+  form.change-password{
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin: 16px 0;
+    padding-bottom: 16px;
   }
 }
 </style>
