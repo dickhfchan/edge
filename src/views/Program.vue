@@ -3,12 +3,18 @@
     <v-flex>
       <div style="width:250px;" class="mr-3">
         <v-select
-        :single-line="true"
          v-bind:items="programs"
          item-text="name"
          item-value="subr"
          v-model="subr"
          label="Program"
+         ></v-select>
+      </div>
+      <div style="width:250px;" class="mr-3">
+        <v-select
+         v-bind:items="statements"
+         v-model="statement"
+         label="Statement"
          ></v-select>
       </div>
     </v-flex>
@@ -17,14 +23,16 @@
       <div class="w-100">
         <v-data-table
             :headers="headers"
-            :items="rows"
+            :items="filteredRows"
             hide-actions
             class=""
           >
           <template slot="items" scope="props">
-            <td class="">{{props.item.no}}</td>
-            <td class="text-xs-right">{{ props.item.stmt }}</td>
-            <td class="text-xs-right">{{ props.item.expr }}</td>
+            <td v-for="(header, i) in headers" class="text-xs-left"
+              :width="header.width"
+            >
+              {{ props.item[header.value] }}
+            </td>
           </template>
         </v-data-table>
       </div>
@@ -40,16 +48,24 @@ export default {
       title: 'Program',
       loading: true,
       programs: [],
+      statements: ['ALL', 'COMMENT', 'DECLARE', 'IF', 'THEN', 'ELSE', 'DO'],
+      statement: 'ALL',
       subr: null,
       headers: [
-        {text: 'No', value: 'no', align: 'left'},
-        {text: 'Statement', value: 'stmt', align: 'left'},
-        {text: 'Expression', value: 'expr'},
+        {text: 'No', value: 'no', align: 'left', width: '50px'},
+        {text: 'Statement', value: 'stmt', align: 'left', width: '50px'},
+        {text: 'Expression', value: 'expr', align: 'left'},
       ],
       rows: [],
     }
   },
   computed: {
+    filteredRows() {
+      if (this.statement === 'ALL') {
+        return this.rows
+      }
+      return this.rows.filter(row => row.stmt === this.statement)
+    },
   },
   watch: {
     subr() {

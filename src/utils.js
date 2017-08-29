@@ -1,5 +1,6 @@
-import { titleCase, windowLoaded, unset } from 'helper-js'
+import { titleCase } from 'helper-js'
 import Vue from 'vue'
+import DataSource from './DataSource.js'
 
 export function initAxios(axios, Vue, store, config) {
   const axiosInstance = axios.create({
@@ -238,4 +239,19 @@ export function namedHttpGet(name, url, options0) {
   const options = Object.assign({}, options0 || {})
   options.cancelToken = new CancelToken((c) => { storeOfCancelOldRequest[name] = c })
   return http.get(url, options)
+}
+
+export function newService(func) {
+  console.log('new services connect, func is follow')
+  console.log(func)
+  const dt = new DataSource()
+  dt.type = 'services'
+  dt.func = func
+  return new Promise(function(resolve, reject) {
+    dt.ongetdata = data => {
+      resolve(data)
+      dt.close()
+    }
+    dt.connect()
+  })
 }

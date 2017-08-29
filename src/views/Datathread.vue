@@ -1,5 +1,25 @@
 <template>
   <v-layout row wrap>
+    <v-flex xs12 class="mb-3" v-if="data2">
+      <div class="w-100">
+        <v-data-table
+          :headers="headers2"
+          :items="data2.Status.AlarmDetails"
+          hide-actions
+          class="elevation-1"
+        >
+          <template slot="items" scope="props">
+            <td v-for="(header, i) in headers2" :class="{'text-xs-right': i > 0}">{{ props.item[header.value] }}</td>
+          </template>
+        </v-data-table>
+        <p class="mt-3 data2-table-footer">
+            <span>PLCComm: {{data2.Status.PLCComm}}</span>
+            <span>LineMode: {{data2.Status.LineMode}}</span>
+            <span>AlarmStatus: {{data2.Status.AlarmStatus}}</span>
+            <span>NoAlarms: {{data2.Status.NoAlarms}}</span>
+        </p>
+      </div>
+    </v-flex>
     <v-flex>
       <div style="width:250px;" class="mr-3">
         <v-select
@@ -41,27 +61,6 @@
       </div>
       <div class="flex-1 ml-4">
         <canvas class="temperature-chart"></canvas>
-      </div>
-    </v-flex>
-
-    <v-flex xs12 class="mt-3" v-if="data2">
-      <div class="w-100">
-        <v-data-table
-          :headers="headers2"
-          :items="data2.Status.AlarmDetails"
-          hide-actions
-          class="elevation-1"
-        >
-          <template slot="items" scope="props">
-            <td v-for="(header, i) in headers2" :class="{'text-xs-right': i > 0}">{{ props.item[header.value] }}</td>
-          </template>
-        </v-data-table>
-        <p class="mt-3">
-            <span class="mr-5">PLCComm: {{data2.Status.PLCComm}}</span>
-            <span class="mr-5">LineMode: {{data2.Status.LineMode}}</span>
-            <span class="mr-5">AlarmStatus: {{data2.Status.AlarmStatus}}</span>
-            <span class="mr-5">NoAlarms: {{data2.Status.NoAlarms}}</span>
-        </p>
       </div>
     </v-flex>
 
@@ -339,6 +338,12 @@ export default {
     thead{
       display: none;
     }
+  }
+}
+.data2-table-footer{
+  span{
+    display: inline-block;
+    margin-right: 100px;
   }
 }
 </style>
