@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 // import config from '../config.js'
 import urls from './modules/urls.js'
 // import createLogger from '@/../node_modules/vuex/src/plugins/logger.js'
+import DataSource from '../DataSource.js'
 
 Vue.use(Vuex)
 
@@ -22,13 +23,28 @@ const store = new Vuex.Store({
     initialized(state, val) { state.initialized = val },
   },
   actions: {
-    async init({dispatch, commit, state}, vm) {
-      // router ready
-      await new Promise((resolve, reject) => {
-        vm.$router.onReady(resolve)
+    login({state}, {username, password}) {
+      return new Promise((resolve, reject) => {
+        const dt = new DataSource()
+        dt.type = 'services'
+        dt.username = username
+        dt.password = password
+        dt.onlogin = data => {
+          if (data.hasOwnProperty('errc')) {
+            reject(new Error('login failed'))
+          } else {
+            state.user = {
+              name: username,
+              username,
+              info: data
+            }
+            state.authenticated = true
+            resolve(data)
+          }
+          dt.close()
+        }
+        dt.connect()
       })
-      vm.$router.push({name: 'login'})
-      state.initialized = true
     },
     logout({commit, state}) {
       state.authenticated = false
