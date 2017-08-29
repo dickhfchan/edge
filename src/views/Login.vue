@@ -93,7 +93,7 @@ export default {
         dt.password = password
         dt.onlogin = data => {
           if (data.hasOwnProperty('errc')) {
-            window.alert('Login failed')
+            this.$alert('Login failed')
           } else {
             this.$store.state.user = {
               name: username,
