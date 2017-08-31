@@ -142,8 +142,8 @@
        <v-card-text>{{confirm.content}}</v-card-text>
        <v-card-actions>
          <v-spacer></v-spacer>
-         <v-btn class="yellow--text darken-1" flat="flat" @click.native="confirm.cancel">Cancel</v-btn>
-         <v-btn class="green--text darken-1" flat="flat" @click.native="confirm.ok">OK</v-btn>
+         <v-btn class="orange--text darken-1" flat="flat" @click.native="confirm.cancel">Cancel</v-btn>
+         <v-btn class="teal--text darken-1" flat="flat" @click.native="confirm.ok">OK</v-btn>
        </v-card-actions>
      </v-card>
    </v-dialog>
@@ -264,14 +264,14 @@ export default {
     }
     // register confirm
     Vue.confirm = Vue.prototype.$confirm = (content, title = 'Confirm') => {
-      window.setTimeout(() => {
-        this.confirm.content = content
-        this.confirm.visible = true
-        return new Promise((resolve, reject) => {
-          this.confirm.resolve = resolve
-          this.confirm.reject = reject
-        })
-      }, 100)
+      return new Promise((resolve, reject) => {
+        window.setTimeout(() => {
+          this.confirm.content = content
+          this.confirm.visible = true
+        }, 100)
+        this.confirm.resolve = resolve
+        this.confirm.reject = reject
+      })
     }
   },
 }

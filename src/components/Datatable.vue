@@ -16,12 +16,12 @@
     </slot>
     <slot name="tbody">
       <tbody>
-        <tr v-for="row in items">
+        <tr v-for="(row, index) in items">
           <td v-for="col in headers" :key="col.value" :class="col.align==='right'?'text-xs-right':'text-xs-left'">
             {{row[col.value]}}
           </td>
           <td>
-            <!-- <v-btn flat danger>Remove</v-btn> -->
+            <v-btn flat danger @click.native="$emit('remove', {row, index})">Remove</v-btn>
           </td>
         </tr>
       </tbody>
@@ -29,6 +29,7 @@
   </table>
 </div>
 </template>
+
 <script>
 export default {
   // components:
