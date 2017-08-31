@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="./node_modules/chart.js/dist/Chart.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <canvas id="xx"></canvas>
+    <script>
+      const chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(231,233,237)'
+      }
+      const colors = Object.values(chartColors)
+      const ctx = document.getElementById('xx').getContext('2d')
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          datasets: [{
+            label: 'First dataset',
+                    fill: false,
+            data: [0, 80, 40, 3]
+          },
+          {
+            label: 'aFirst dataset',
+                    fill: false,
+            data: [10, 20, 140, 3]
+          },
+          {
+            label: '3',
+                    fill: false,
+            data: [100, 2, 14, 30]
+          },
+          {
+            label: '4',
+                    fill: false,
+            data: [10, 20, 34, 60]
+          },
+        ],
+          labels: ['January', 'February', 'March', 'April']
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                suggestedMin: 50,
+                suggestedMax: 100,
+              }
+            }]
+          }
+        }
+      })
+      this.temperatureChart = new window.Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['a', 'b', 'c'],
+          datasets: [
+            {
+              fill: false,
+              label: '1',
+              borderColor: colors[0],
+              backgroundColor: colors[0],
+              data: [1, 2, 3],
+              // yAxesID: 'y-axis-1',
+            },
+            {
+              fill: false,
+              label: '2',
+              borderColor: colors[1],
+              backgroundColor: colors[1],
+              data: [4, 1, 6],
+              // yAxesID: 'y-axis-1',
+            },
+            {
+              fill: false,
+              label: '3',
+              borderColor: colors[1],
+              backgroundColor: colors[1],
+              data: [8, 4, 2],
+              // yAxesID: 'y-axis-1',
+            },
+          ],
+          // datasets: rows.map(row => {
+          //   const color = colors.shift()
+          //   return {
+          //     label: row.text,
+          //     fill: false,
+          //     borderColor: color,
+          //     backgroundColor: color,
+          //     data: [row.originalValue],
+          //     yAxesID: 'y-axis-1',
+          //   }
+          // }),
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              // id: 'y-axis-1',
+              ticks: {
+                suggestedMin: 5,
+                suggestedMax: 10
+              }
+            }]
+          }
+        },
+      })
+    </script>
+  </body>
+</html>

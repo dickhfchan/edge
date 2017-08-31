@@ -290,20 +290,18 @@ export default {
               borderColor: color,
               backgroundColor: color,
               data: [row.originalValue],
-              yAxesID: 'y-axis-1',
+              // yAxesID: 'y-axis-1',
             }
           }),
-          options: {
-            scales: {
-              yAxes: [{
-                id: 'y-axis-1',
-                // max: 100,
-                ticks: {
-                  suggestedMax: 150,
-                }
-              }]
-            }
-          },
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                suggestedMax: 100,
+              }
+            }]
+          }
         },
       })
     },
