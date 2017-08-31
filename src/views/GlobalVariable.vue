@@ -70,9 +70,6 @@ export default {
       document.title = this.title
     })
   },
-  beforeDestroy() {
-    this.dataSource.close()
-  },
   methods: {
     newItem() {
       const item = {}

@@ -88,7 +88,7 @@ export default {
         data1: {}
       },
       data2: null,
-      temperatureChartMaxTimestampCount: 20,
+      temperatureChartMaxTimestampCount: 50,
     }
   },
   computed: {

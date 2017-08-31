@@ -112,9 +112,6 @@ export default {
       document.title = this.title
     })
   },
-  beforeDestroy() {
-    this.dataSource.close()
-  },
   methods: {
     getData() {
       newService({func: 18}).then(data => {

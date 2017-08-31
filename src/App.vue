@@ -8,6 +8,7 @@
   <template v-else>
     <router-view v-if="$route.name==='login'"></router-view>
     <template v-else-if="$store.state.authenticated">
+      <!-- menu with sub menu -->
       <!-- <v-navigation-drawer
          v-model="drawer"
          :mini-variant="mini"
@@ -81,6 +82,12 @@
         </v-toolbar>
         <div class="pa-3">
           Name: {{state.user.username}}
+          <br>
+          Default level: {{state.user.info.defl}}
+          <br>
+          No of allowed level: {{state.user.info.nalw}}
+          <br>
+          Allowed level: {{state.user.info.alwl.map(v => v.atxt).join(', ')}}
           <br>
           <div class="">
             <v-btn light class="ml-0" @click.native.stop="changePasswordVisible=!changePasswordVisible">Change Password</v-btn>
