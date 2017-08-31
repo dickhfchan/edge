@@ -1,6 +1,6 @@
 <template>
   <v-layout row wrap class="ma-3">
-    <v-flex xs12 class="mb-3" v-if="data2">
+    <v-flex xs12 class="" v-if="data2">
       <div class="w-100">
         <v-data-table
           :headers="headers2"
@@ -12,7 +12,7 @@
             <td v-for="(header, i) in headers2" :class="{'text-xs-right': i > 0}">{{ props.item[header.value] }}</td>
           </template>
         </v-data-table>
-        <p class="mt-3 data2-table-footer">
+        <p class="data2-table-footer">
             <span>PLCComm: {{data2.Status.PLCComm}}</span>
             <span>LineMode: {{data2.Status.LineMode}}</span>
             <span>AlarmStatus: {{data2.Status.AlarmStatus}}</span>
@@ -292,7 +292,18 @@ export default {
               data: [row.originalValue],
               yAxesID: 'y-axis-1',
             }
-          })
+          }),
+          options: {
+            scales: {
+              yAxes: [{
+                id: 'y-axis-1',
+                // max: 100,
+                ticks: {
+                  suggestedMax: 150,
+                }
+              }]
+            }
+          },
         },
       })
     },
@@ -335,9 +346,13 @@ export default {
   }
 }
 .data2-table-footer{
+  background-color: #8a8a8a;
+  color: #fff;
+  padding: 5px;
+  margin: 10px 0;
   span{
     display: inline-block;
-    margin-right: 100px;
+    margin-right: 200px;
   }
 }
 </style>

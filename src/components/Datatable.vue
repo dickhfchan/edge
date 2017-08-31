@@ -4,12 +4,12 @@
     <slot name="thead">
       <thead>
         <tr>
-          <th class="column sortable" v-for="col in headers" :width="col.width" 
-            :class="(col.align==='right'?'text-xs-right':'text-xs-left') + sortClass(col)"
+          <th class="column" v-for="col in headers" :width="col.width"
+            :class="[(col.align==='right'?'text-xs-right':'text-xs-left') + sortClass(col), {sortable: col.sortAble!==false}]"
             @click="sort(col)"
           >
             {{col.text}}
-            <i class="material-icons icon">arrow_upward</i>
+            <i class="material-icons icon" v-if="col.sortAble!==false">arrow_upward</i>
           </th>
         </tr>
       </thead>
@@ -17,8 +17,11 @@
     <slot name="tbody">
       <tbody>
         <tr v-for="row in items">
-          <td v-for="col in headers" :class="col.align==='right'?'text-xs-right':'text-xs-left'">
+          <td v-for="col in headers" :key="col.value" :class="col.align==='right'?'text-xs-right':'text-xs-left'">
             {{row[col.value]}}
+          </td>
+          <td>
+            <!-- <v-btn flat danger>Remove</v-btn> -->
           </td>
         </tr>
       </tbody>
@@ -41,6 +44,9 @@ export default {
   },
   methods: {
     sort(col) {
+      if (col.sortAble === false) {
+        return
+      }
       const {sortBy, sortOrder} = this
       if (col.value === sortBy) {
         if (sortOrder === 'desc') {
@@ -69,6 +75,9 @@ export default {
       }
     },
     sortClass(col) {
+      if (col.sortAble === false) {
+        return ''
+      }
       const {sortBy, sortOrder} = this
       if (col.value === sortBy) {
         return ' active ' + sortOrder

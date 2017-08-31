@@ -13,6 +13,9 @@
 .flex-col{
   flex-direction: column;
 }
+.flex-align-center{
+  align-items: center;
+}
 .center-wrapper{
   display: flex;
   justify-content: center;
@@ -50,7 +53,8 @@
 
 .datatable.table{
   td{
-    height: 36px;
-    line-height: 40px;
+    $height: 30px;
+    height: $height;
+    line-height: $height;
   }
 }
