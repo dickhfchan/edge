@@ -352,5 +352,13 @@ export default {
     display: inline-block;
     margin-right: 200px;
   }
+  @media (max-width:1500px) {
+    display: flex;
+    justify-content: space-between;
+    span{
+      display: inline;
+      margin-right: 0;
+    }
+  }
 }
 </style>

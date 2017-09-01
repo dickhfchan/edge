@@ -325,6 +325,7 @@ html, body, #app{
   }
   > main{
     padding: 0;
+    overflow: auto;
   }
 }
 .right-sidebar{
