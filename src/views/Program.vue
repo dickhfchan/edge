@@ -48,16 +48,42 @@
         </Datatable>
       </div>
     </v-flex>
+    <v-flex>
+      <form style="width: 300px;" @submit.prevent="search">
+        <v-text-field
+          single-line
+          label="Search"
+          v-model="searchText"
+          append-icon="search"
+          :append-icon-cb="search"
+          type="text"
+        ></v-text-field>
+        <button class="hidden"></button>
+      </form>
+      <div class="flex flex-align-center" style="padding-bottom: 50px;">
+        <v-progress-circular  v-if="searching"  indeterminate class="primary--text" :size="20"></v-progress-circular>
+      </div>
+    </v-flex>
+    <v-flex xs12>
+        <Datatable2
+          :headers="headers2"
+          :items="rows2"
+          class="elevation-1"
+          :actionsVisible="false"
+        >
+        </Datatable2>
+    </v-flex>
   </v-layout>
 </template>
 <script>
 import DataSource from '@/DataSource'
 import Datatable from '../components/ProgramDatatable.vue'
+import Datatable2 from '../components/Datatable.vue'
 import { newService } from '@/utils'
 
 const allStmts = 'ALL'
 export default {
-  components: {Datatable},
+  components: {Datatable, Datatable2},
   data() {
     return {
       self: this,
@@ -76,6 +102,15 @@ export default {
       rows: [],
       saving: false,
       succeeded: false,
+      // 2
+      searchText: null,
+      headers2: [
+        {text: 'Line number', value: 'line', align: 'left', width: '50px', sortAble: false},
+        {text: 'Start at character position', value: 'chnu', align: 'left', width: '50px', sortAble: false},
+        {text: 'Description', value: 'desc', align: 'left', sortAble: false},
+      ],
+      rows2: [],
+      searching: false,
     }
   },
   computed: {
@@ -230,6 +265,19 @@ export default {
           console.log(r)
         }
         this.saving = false
+      })
+    },
+    search() {
+      const data = {"func":23,"srhm":"subroutine","upca":"0","wwrd":"0","srhs":this.searchText}
+      this.searching = true
+      newService(data).then(r => {
+        if (r.errc > 0) {
+          this.$alert('Search failed')
+          console.log(r)
+        } else {
+          this.rows2 = r.rows
+        }
+        this.searching = false
       })
     },
   }

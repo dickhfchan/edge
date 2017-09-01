@@ -4,7 +4,7 @@
     <slot name="thead">
       <thead>
         <tr>
-          <th class="column" v-for="col in headers" :width="col.width"
+          <th class="column" v-for="col in headers" v-if="col.value!=='actions'||actionsVisible" :width="col.width"
             :class="[(col.align==='right'?'text-xs-right':'text-xs-left') + sortClass(col), {sortable: col.sortAble!==false}]"
             @click="sort(col)"
           >
@@ -20,7 +20,7 @@
           <td v-for="col in headers" :key="col.value" :class="col.align==='right'?'text-xs-right':'text-xs-left'">
             {{row[col.value]}}
           </td>
-          <td>
+          <td v-if="actionsVisible">
             <v-btn flat danger @click.native="$emit('remove', {row, index})">Remove</v-btn>
           </td>
         </tr>
@@ -36,6 +36,7 @@ export default {
   props: {
     headers: {},
     items: {},
+    actionsVisible: {default: true}
   },
   data() {
     return {
