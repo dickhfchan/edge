@@ -102,11 +102,14 @@
                 <template v-if="col.value !== 'actions'">
                   <template v-if="col.editAble!==false">
                     <input v-if="col.type === 'number'" type="number" v-model="row[col.value]" />
-                    <select v-else-if="col.value==='stmt'" class="" name="" v-model="row[col.value]">
-                      <option v-for="item in statements" :value="item.value">
-                        {{item.text}}
-                      </option>
-                    </select>
+                    <template v-else-if="col.value==='stmt'">
+                      <select :class="{lbl: row.stmtType==='LBL'}" name="" v-model="row.stmtType">
+                        <option v-for="item in statements" :value="item.value">
+                          {{item.text}}
+                        </option>
+                      </select>
+                      <input v-if="row.stmtType==='LBL'" type="number" v-model="row.lbl" class="lbl" />
+                    </template>
                     <input v-else type="text" v-model="row[col.value]" />
                   </template>
                   <span v-else>{{row[col.value]}}</span>
@@ -141,7 +144,7 @@ export default {
       title: 'Program',
       loading: true,
       programs: [],
-      statements: ['COMMENT', 'DECLARE', 'IF', 'THEN', 'ELSE', 'ELSE IF', 'DO', 'LBL10'].map(v => {
+      statements: ['COMMENT', 'DECLARE', 'IF', 'THEN', 'ELSE', 'ELSE IF', 'DO', 'LBL'].map(v => {
         return {text: v, value: v}
       }).concat({text: 'Blank', value: ''}),
       subr: null,
@@ -193,6 +196,13 @@ export default {
       handler() {
         this.rows.forEach((row, i) => {
           this.$set(row, 'no', i + 1)
+          if (row.stmt.startsWith('LBL')) {
+            this.$set(row, 'stmtType', 'LBL')
+            this.$set(row, 'lbl', parseInt(row.stmt.replace(/^LBL/, '')))
+          } else {
+            this.$set(row, 'stmtType', row.stmt)
+            this.$set(row, 'lbl', 0)
+          }
         })
       },
     },
@@ -221,6 +231,7 @@ export default {
         item[col.value] = null
       })
       item.stmt = ''
+      item.lbl = 0
       this.rows.push(item)
     },
     insert(i) {
@@ -229,6 +240,7 @@ export default {
         item[col.value] = null
       })
       item.stmt = ''
+      item.lbl = 0
       this.rows.splice(i + 1, 0, item)
     },
     removeEmptyRows() {
@@ -245,7 +257,7 @@ export default {
       for (const row of this.rows) {
         let rowValid = true
         for (const col of this.headers) {
-          if (col.value !== 'actions') {
+          if (col.value !== 'actions' && col.value !== 'stmt') {
             const val = row[col.value]
             if (val == null || val === '') {
               rowValid = false
@@ -268,7 +280,11 @@ export default {
       this.rows.forEach(row => {
         const row2 = {}
         this.headers.filter(col => col.value !== 'no' && col.value !== 'actions').forEach(col => {
-          row2[col.value] = col.type === 'number' ? parseFloat(row[col.value]) : row[col.value]
+          if (col.value === 'stms') {
+            row.stmt = row.stmtType === 'LBL' ? (row.stmtType + row.lbl) : row.stmtType
+          } else {
+            row2[col.value] = col.type === 'number' ? parseFloat(row[col.value]) : row[col.value]
+          }
         })
         dataRows.push(row2)
       })
@@ -370,6 +386,12 @@ export default {
 .program-table{
   table{
     border-collapse: separate;
+  }
+  select.lbl{
+    width: 23px;
+  }
+  input.lbl{
+    width: 30px;
   }
 }
 </style>
