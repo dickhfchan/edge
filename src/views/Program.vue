@@ -97,11 +97,16 @@
           class="elevation-1 program-table"
         >
           <tbody slot="tbody">
-            <tr v-for="(row, i) in filteredRows" @mouseenter="hoveringRow=row" @mouseleave="hoveringRow=null">
+            <tr v-for="(row, i) in rows" @mouseenter="hoveringRow=row" @mouseleave="hoveringRow=null">
               <td v-for="col in headers" class="text-xs-left">
                 <template v-if="col.value !== 'actions'">
                   <template v-if="col.editAble!==false">
                     <input v-if="col.type === 'number'" type="number" v-model="row[col.value]" />
+                    <select v-else="col.value==='stmt'" class="" name="" v-model="row[col.value]">
+                      <option v-for="item in statements" :value="item">
+                        {{item}}
+                      </option>
+                    </select>
                     <input v-else type="text" v-model="row[col.value]" />
                   </template>
                   <span v-else>{{row[col.value]}}</span>
@@ -128,7 +133,6 @@ import Datatable from '../components/ProgramDatatable.vue'
 import Datatable2 from '../components/Datatable.vue'
 import { newService } from '@/utils'
 
-const allStmts = 'ALL'
 export default {
   components: {Datatable, Datatable2},
   data() {
@@ -137,8 +141,7 @@ export default {
       title: 'Program',
       loading: true,
       programs: [],
-      statements: [allStmts, 'COMMENT', 'DECLARE', 'IF', 'THEN', 'ELSE', 'DO'],
-      statement: allStmts,
+      statements: ['COMMENT', 'DECLARE', 'IF', 'THEN', 'ELSE', 'DO'],
       subr: null,
       headers: [
         {text: 'No', value: 'no', align: 'left', width: '50px', sortAble: false, editAble: false},
@@ -168,12 +171,6 @@ export default {
     }
   },
   computed: {
-    filteredRows() {
-      if (this.statement === allStmts) {
-        return this.rows
-      }
-      return this.rows.filter(row => row.stmt === this.statement)
-    },
     program() {
       return this.programs && this.programs.find(v => v.subr === this.subr)
     },
@@ -221,7 +218,7 @@ export default {
       this.headers.forEach(col => {
         item[col.value] = null
       })
-      item.stmt = this.statement === allStmts ? null : this.statement
+      item.stmt = this.statements[0]
       this.rows.push(item)
     },
     insert(i) {
@@ -229,7 +226,7 @@ export default {
       this.headers.forEach(col => {
         item[col.value] = null
       })
-      item.stmt = this.statement === allStmts ? null : this.statement
+      item.stmt = this.statements[0]
       this.rows.splice(i + 1, 0, item)
     },
     removeEmptyRows() {

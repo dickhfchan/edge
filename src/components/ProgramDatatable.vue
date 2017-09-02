@@ -8,7 +8,7 @@
             :class="[(col.align==='right'?'text-xs-right':'text-xs-left') + sortClass(col), {sortable: col.sortAble!==false}]"
             @click="sort(col)"
           >
-            <div class="custom-select" v-if="col.value==='stmt'">
+            <!-- <div class="custom-select" v-if="col.value==='stmt'">
               <select class="" name="" v-model="program.statement">
                 <option v-for="item in program.statements" :value="item">
                   {{item}}
@@ -16,7 +16,8 @@
               </select>
               <v-icon>arrow_drop_down</v-icon>
             </div>
-             <span v-else>{{col.text}}</span>
+             <span v-else>{{col.text}}</span> -->
+             <span>{{col.text}}</span>
             <i class="material-icons icon" v-if="col.sortAble!==false">arrow_upward</i>
           </th>
         </tr>
