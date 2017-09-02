@@ -141,7 +141,7 @@ export default {
       title: 'Program',
       loading: true,
       programs: [],
-      statements: ['COMMENT', 'DECLARE', 'IF', 'THEN', 'ELSE', 'DO'].map(v => {
+      statements: ['COMMENT', 'DECLARE', 'IF', 'THEN', 'ELSE', 'ELSE IF', 'DO', 'LBL10'].map(v => {
         return {text: v, value: v}
       }).concat({text: 'Blank', value: ''}),
       subr: null,
