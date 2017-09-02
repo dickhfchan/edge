@@ -102,9 +102,9 @@
                 <template v-if="col.value !== 'actions'">
                   <template v-if="col.editAble!==false">
                     <input v-if="col.type === 'number'" type="number" v-model="row[col.value]" />
-                    <select v-else="col.value==='stmt'" class="" name="" v-model="row[col.value]">
-                      <option v-for="item in statements" :value="item">
-                        {{item}}
+                    <select v-else-if="col.value==='stmt'" class="" name="" v-model="row[col.value]">
+                      <option v-for="item in statements" :value="item.value">
+                        {{item.text}}
                       </option>
                     </select>
                     <input v-else type="text" v-model="row[col.value]" />
@@ -141,13 +141,15 @@ export default {
       title: 'Program',
       loading: true,
       programs: [],
-      statements: ['COMMENT', 'DECLARE', 'IF', 'THEN', 'ELSE', 'DO'],
+      statements: ['COMMENT', 'DECLARE', 'IF', 'THEN', 'ELSE', 'DO'].map(v => {
+        return {text: v, value: v}
+      }).concat({text: 'Blank', value: ''}),
       subr: null,
       headers: [
         {text: 'No', value: 'no', align: 'left', width: '50px', sortAble: false, editAble: false},
         {text: 'Statement', value: 'stmt', align: 'left', width: '50px', sortAble: false},
         {text: 'Expression', value: 'expr', align: 'left', sortAble: false},
-        {text: 'Actions', value: 'actions', align: 'left', sortAble: false},
+        {text: 'Actions', value: 'actions', align: 'left', width: '270px', sortAble: false},
       ],
       rows: [],
       saving: false,
@@ -218,7 +220,7 @@ export default {
       this.headers.forEach(col => {
         item[col.value] = null
       })
-      item.stmt = this.statements[0]
+      item.stmt = ''
       this.rows.push(item)
     },
     insert(i) {
@@ -226,7 +228,7 @@ export default {
       this.headers.forEach(col => {
         item[col.value] = null
       })
-      item.stmt = this.statements[0]
+      item.stmt = ''
       this.rows.splice(i + 1, 0, item)
     },
     removeEmptyRows() {
