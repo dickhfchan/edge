@@ -21,9 +21,14 @@
                 <input v-if="col.type === 'number'" type="number" v-model="row[col.value]" />
                 <input v-else type="text" v-model="row[col.value]" />
               </template>
-              <v-btn v-else error small class="ma-1" @click="remove(row, i)">
-                Remove
-              </v-btn>
+              <template v-else>
+                <v-btn error small class="" @click="remove(row, i)">
+                  Remove
+                </v-btn>
+                <v-btn small class="ml-0" @click="insert(i)">
+                  Insert
+                </v-btn>
+              </template>
             </td>
           </tr>
         </tbody>
@@ -77,6 +82,13 @@ export default {
         item[col.value] = null
       })
       this.rows.push(item)
+    },
+    insert(i) {
+      const item = {}
+      this.headers.forEach(col => {
+        item[col.value] = null
+      })
+      this.rows.splice(i + 1, 0, item)
     },
     save() {
       let valid = true
