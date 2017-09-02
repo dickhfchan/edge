@@ -18,6 +18,9 @@ const store = new Vuex.Store({
     builtAt: window.builtAt,
     brand: 'Edge',
     loginSubtitle: 'Sign in to start your session',
+    rules: {
+      required: value => (value == null || value === '') ? 'Required' : true,
+    },
   },
   mutations: {
     initialized(state, val) { state.initialized = val },

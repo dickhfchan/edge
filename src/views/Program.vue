@@ -40,6 +40,7 @@
                           label="Keyword"
                           v-model="searchText"
                           type="text"
+                          :rules="[$store.state.rules.required]"
                         ></v-text-field>
                       </v-flex>
                       <v-flex xs6>
@@ -68,13 +69,13 @@
                   </form>
                 </v-flex>
                 <v-flex xs12 class="mt-2">
-                    <Datatable2
-                      :headers="headers2"
-                      :items="rows2"
-                      class="elevation-1"
-                      :actionsVisible="false"
-                    >
-                    </Datatable2>
+                  <Datatable2
+                    :headers="headers2"
+                    :items="rows2"
+                    class="elevation-1"
+                    :actionsVisible="false"
+                  >
+                  </Datatable2>
                 </v-flex>
               </v-layout>
             </v-card-text>
@@ -345,6 +346,9 @@ export default {
       }
     },
     search() {
+      if (!this.searchText) {
+        return
+      }
       const data = {'func': 23, 'srhm': this.searchMode.toLowerCase(), 'upca': this.searchMULC ? '1' : '0', 'wwrd': this.searchMWW ? '1' : '0', 'srhs': this.searchText || ''}
       this.searching = true
       newService(data).then(r => {
@@ -353,6 +357,9 @@ export default {
           console.log(r)
         } else {
           this.rows2 = r.rows
+          if (this.rows2.length === 0) {
+            this.$alert('No data found')
+          }
         }
         this.searching = false
       })
