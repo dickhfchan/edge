@@ -249,6 +249,8 @@ export function newService(func) {
   dt.func = func
   return new Promise(function(resolve, reject) {
     dt.ongetdata = data => {
+      console.log('data is follow')
+      console.log(data)
       resolve(data)
       dt.close()
     }

@@ -130,7 +130,7 @@ export default {
       this.saving = true
       newService(data).then(r => {
         if (r.errc > 0) {
-          this.$alert('Save failed')
+          this.$alert(r.errt || 'Save failed')
           console.log(r)
         } else {
           this.succeeded = true
