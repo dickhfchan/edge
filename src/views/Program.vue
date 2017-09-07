@@ -280,7 +280,7 @@ export default {
       this.saving = true
       newService(data).then(r => {
         if (r.errc > 0) {
-          this.$alert('Save failed')
+          this.$alert(r.errt || 'Save failed')
           console.log(r)
         } else {
           this.programs.push({name, subr})
@@ -382,7 +382,7 @@ export default {
         newService(data).then(r => {
           if (r.errc > 0) {
             this.removing = false
-            this.$alert('Remove failed')
+            this.$alert(r.errt || 'Remove failed')
             console.log(r)
           } else {
             this.subr = null
@@ -394,15 +394,15 @@ export default {
       })
     },
     compile() {
-      this.removeEmptyRows()
-      if (!this.validateRows()) {
-        return
-      }
+      // this.removeEmptyRows()
+      // if (!this.validateRows()) {
+      //   return
+      // }
       const data = {func: 22, nrow: this.rows.length, rows: this.getDataRows()}
       this.compiling = true
       newService(data).then(r => {
         if (r.errc > 0) {
-          this.$alert('Compile failed')
+          this.$alert(r.errt || 'Compile failed')
           console.log(r)
         } else {
           this.succeeded = true
@@ -429,7 +429,7 @@ export default {
       this.searching = true
       newService(data).then(r => {
         if (r.errc > 0) {
-          this.$alert('Search failed')
+          this.$alert(r.errt || 'Search failed')
           console.log(r)
         } else {
           this.rows2 = r.rows
