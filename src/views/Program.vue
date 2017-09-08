@@ -340,9 +340,14 @@ export default {
       }
       return valid
     },
-    getDataRows() {
-      const dataRows = []
-      this.rows.forEach(row => {
+    /**
+     * [getDataRows description]
+     * @param  {[type]} rows [if no rows, it will use this.rows]
+     * @return [type]        [description]
+     */
+    getDataRows(rows) {
+      const dataRows = [];
+      (rows || this.rows).forEach(row => {
         const row2 = {}
         this.headers.filter(col => col.value !== 'no' && col.value !== 'actions').forEach(col => {
           if (col.value === 'stmt') {
@@ -360,7 +365,7 @@ export default {
       // if (!this.validateRows()) {
       //   return
       // }
-      const data = {func: 20, csub: 1, subr: this.program.subr, name: this.program.name, nrow: this.rows.length, rows: this.getDataRows()}
+      const data = {func: 20, csub: 0, subr: this.program.subr, name: this.program.name, nrow: this.rows.length, rows: this.getDataRows()}
       this.saving = true
       newService(data).then(r => {
         if (r.errc > 0) {
@@ -372,8 +377,17 @@ export default {
       })
     },
     remove(row, i) {
-      this.rows.splice(i, 1)
-      this.save()
+      const rows2 = this.rows.slice(0)
+      rows2.splice(i, 1)
+      const data = {func: 20, csub: 0, subr: this.program.subr, name: this.program.name, nrow: rows2.length, rows: this.getDataRows(rows2)}
+      newService(data).then(r => {
+        if (r.errc > 0) {
+          this.$alert(r.errt || 'Remove failed')
+          console.log(r)
+        } else {
+          this.rows.splice(i, 1)
+        }
+      })
     },
     removeProgram() {
       this.$confirm('Are you sure to remove the program?').then(() => {
@@ -405,10 +419,6 @@ export default {
           this.$alert(r.errt || 'Compile failed')
           console.log(r)
         } else {
-          this.succeeded = true
-          window.setTimeout(() => {
-            this.succeeded = false
-          }, 1000)
           console.log(r)
         }
         this.compiling = false

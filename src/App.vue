@@ -48,7 +48,7 @@
         <div class="site-brand">
           {{$store.state.brand}}
         </div>
-        <v-list class="pt-0" dense dark>
+        <v-list class="pt-0" dense>
           <v-list-tile v-for="item in items" :key="item.title"
             :href="item.route && $router.resolve(item.route).href" @click.prevent="item.route && $router.push(item.route)"
           >
@@ -165,8 +165,8 @@ export default {
   name: 'app',
   data () {
     return {
-      drawer: null,
-      rightDrawer: null,
+      drawer: false,
+      rightDrawer: false,
       items: [
          { title: 'Data Thread', icon: 'dashboard', route: {name: 'datathread'} },
          { title: 'Global Variable', route: {name: 'globalVariable'} },
@@ -327,6 +327,14 @@ html, body, #app{
   > main{
     padding: 0;
     overflow: auto;
+  }
+}
+.sidebar.navigation-drawer{
+  ul.list{
+    background: #00bcd4;
+    a.list__tile{
+      color: #fff;
+    }
   }
 }
 .right-sidebar{
