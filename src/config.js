@@ -20,11 +20,13 @@ const config = {
 switch (process.env.NODE_ENV) {
   case 'production':
     Object.assign(config, {
+      serverBaseUrl: customServerBaseUrl || `ws://${window.location.hostname}:${window.location.port}/`,
     })
     break
   case 'development':
     Object.assign(config, {
       isDevelopment: true,
+      serverBaseUrl: 'ws://54.169.76.110:7681/',
     })
     break
 }

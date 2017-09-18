@@ -1,25 +1,5 @@
 <template>
   <v-layout row wrap class="ma-3">
-    <v-flex xs12 class="" v-if="data2">
-      <div class="w-100">
-        <v-data-table
-          :headers="headers2"
-          :items="data2.Status.AlarmDetails"
-          hide-actions
-          class="elevation-1"
-        >
-          <template slot="items" scope="props">
-            <td v-for="(header, i) in headers2" :class="{'text-xs-right': i > 0}">{{ props.item[header.value] }}</td>
-          </template>
-        </v-data-table>
-        <p class="data2-table-footer">
-            <span>PLCComm: {{data2.Status.PLCComm}}</span>
-            <span>LineMode: {{data2.Status.LineMode}}</span>
-            <span>AlarmStatus: {{data2.Status.AlarmStatus}}</span>
-            <span>NoAlarms: {{data2.Status.NoAlarms}}</span>
-        </p>
-      </div>
-    </v-flex>
     <v-flex>
       <div style="width:250px;" class="mr-3">
         <v-select
@@ -37,6 +17,13 @@
         item-text="text"
         v-model="item1"
         label="Item"
+        ></v-select>
+      </div>
+      <div style="width:200px;" class="mr-3" v-if="object1&&object1.objaddr==='temp'">
+       <v-select
+        v-bind:items="['C', '%']"
+        v-model="temperatureUnit"
+        label="Unit"
         ></v-select>
       </div>
       <div style="align-items:center; padding:18px 0;">
@@ -64,6 +51,27 @@
       </div>
     </v-flex>
 
+    <v-flex xs12 class="" v-if="data2">
+      <div class="w-100">
+        <v-data-table
+          :headers="headers2"
+          :items="data2.Status.AlarmDetails"
+          hide-actions
+          class="elevation-1"
+        >
+          <template slot="items" scope="props">
+            <td v-for="(header, i) in headers2" :class="{'text-xs-right': i > 0}">{{ props.item[header.value] }}</td>
+          </template>
+        </v-data-table>
+        <p class="data2-table-footer">
+            <span>PLCComm: {{data2.Status.PLCComm}}</span>
+            <span>LineMode: {{data2.Status.LineMode}}</span>
+            <span>AlarmStatus: {{data2.Status.AlarmStatus}}</span>
+            <span>NoAlarms: {{data2.Status.NoAlarms}}</span>
+        </p>
+      </div>
+    </v-flex>
+
     <div class="absolute-backdrop center-wrapper" v-if="loading">
       <v-progress-circular indeterminate class="primary--text"></v-progress-circular>
     </div>
@@ -83,12 +91,41 @@ export default {
       configuration: null,
       originData1: null,
       object1: null,
+      temperatureUnit: 'C',
       item1: null,
       cache: {
         data1: {}
       },
       data2: null,
       temperatureChartMaxTimestampCount: 50,
+      headers2: [
+        // {
+        //   'text': 'WordIX',
+        //   'value': 'WordIX',
+        //   'align': 'left'
+        // },
+        // {
+        //   'text': 'BitIX',
+        //   'value': 'BitIX'
+        // },
+        {
+          'text': 'Category',
+          'value': 'Category',
+          'align': 'left'
+        },
+        {
+          'text': 'Status',
+          'value': 'AlarmStatus'
+        },
+        {
+          'text': 'Mode',
+          'value': 'AlarmMode'
+        },
+        {
+          'text': 'Comments',
+          'value': 'Comments'
+        }
+      ],
     }
   },
   computed: {
@@ -119,7 +156,7 @@ export default {
       this.cache.data1 = data1
       return data1
     },
-    itemRows1() {
+    itemRows1All() {
       try {
         const flds = this.object1.fileds.slice(0) // copy
         const rows = []
@@ -145,18 +182,28 @@ export default {
               val = `${val} ${oFld.fldunits}`
             }
           }
-          return { text: fld.text, value: val, originalValue }
+          return { text: fld.text, value: val, originalValue, unit: oFld.fldunits }
         }))
       } catch (e) {
         return []
       }
     },
-    headers2() {
-      const r = Object.keys(this.data2.Status.AlarmDetails[0]).map(key => {
-        return { text: key, value: key }
-      })
-      r[0].align = 'left'
-      return r
+    // for temperature, temperature will filter by unit
+    itemRows1() {
+      if (this.object1 && this.object1.objaddr === 'temp') {
+        const r = []
+        for (let i = 0; i < this.itemRows1All.length; i++) {
+          const row = this.itemRows1All[i]
+          if (i < 3) {
+            r.push(row)
+          } else {
+            row.unit === this.temperatureUnit && r.push(row)
+          }
+        }
+        return r
+      } else {
+        return this.itemRows1All
+      }
     },
   },
   watch: {
@@ -180,6 +227,9 @@ export default {
           this.renderTemperatureChart()
         }
       }
+    },
+    temperatureUnit() {
+      this.updateTemperatureChartDatasetVisibility()
     },
   },
   created() {
@@ -277,16 +327,20 @@ export default {
       }
       const colors = Object.values(chartColors)
       const ctx = this.$el.querySelector('.temperature-chart').getContext('2d')
-      const rows = this.itemRows1.slice(3)
+      const rows = this.itemRows1All.slice(3)
+      let i = -1
       this.temperatureChart = new Chart(ctx, {
         type: 'line',
         data: {
           labels: [format(new Date(this.data1.datetime), 'mm:ss')],
           datasets: rows.map(row => {
-            const color = colors.shift()
+            i++
+            const color = colors[i % 7]
             return {
               label: row.text,
               fill: false,
+              hidden: row.unit !== this.temperatureUnit,
+              temperatureUnit: row.unit,
               borderColor: color,
               backgroundColor: color,
               data: [row.originalValue],
@@ -309,9 +363,8 @@ export default {
       if (this.temperatureChart) {
         const chart = this.temperatureChart
         chart.data.labels.push(format(new Date(this.data1.datetime), 'mm:ss'))
-        this.itemRows1.slice(3)
         chart.data.datasets.forEach((dataset, i) => {
-          dataset.data.push(this.itemRows1[i + 3].originalValue)
+          dataset.data.push(this.itemRows1All[i + 3].originalValue)
         })
         const max = this.temperatureChartMaxTimestampCount
         const len = chart.data.labels.length
@@ -322,6 +375,15 @@ export default {
             dataset.data.splice(0, 1)
           })
         }
+        chart.update()
+      }
+    },
+    updateTemperatureChartDatasetVisibility() {
+      if (this.temperatureChart) {
+        const chart = this.temperatureChart
+        chart.data.datasets.forEach((dataset, i) => {
+          dataset.hidden = dataset.temperatureUnit !== this.temperatureUnit
+        })
         chart.update()
       }
     },

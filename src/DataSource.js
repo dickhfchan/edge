@@ -1,6 +1,7 @@
+import config from './config.js'
 let username, password
 export default class DataSource {
-  wsUri = `ws://${window.location.hostname}:${window.location.port}/`; // 'ws://localhost:7681/'
+  wsUri = config.serverBaseUrl;
   websocket;
   type = 'datathread'; // datathread/configuration
   func; // for services
