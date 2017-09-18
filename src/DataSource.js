@@ -1,6 +1,6 @@
 let username, password
 export default class DataSource {
-  wsUri = 'ws://localhost:7681/';
+  wsUri = `ws://${window.location.hostname}:${window.location.port}/`; // 'ws://localhost:7681/'
   websocket;
   type = 'datathread'; // datathread/configuration
   func; // for services
