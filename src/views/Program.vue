@@ -209,6 +209,7 @@ export default {
       searchText: null,
       headers2: [
         {text: 'Line number', value: 'line', align: 'left', width: '50px', sortAble: false},
+        {text: 'Program name', value: 'programName', align: 'left', width: 'auto', sortAble: false},
         {text: 'Start at character position', value: 'chnu', align: 'left', width: '50px', sortAble: false},
         {text: 'Description', value: 'desc', align: 'left', sortAble: false},
       ],
@@ -296,7 +297,9 @@ export default {
         item[col.value] = ''
       })
       item.stmt = ''
+      item.stmtType = ''
       item.lbl = 0
+      item.saved = false
       this.rows.push(item)
     },
     insert(i) {
@@ -350,11 +353,7 @@ export default {
       (rows || this.rows).forEach(row => {
         const row2 = {}
         this.headers.filter(col => col.value !== 'no' && col.value !== 'actions').forEach(col => {
-          if (col.value === 'stmt') {
-            row2.stmt = row.stmtType === 'LBL' ? (row.stmtType + row.lbl) : row.stmtType
-          } else {
-            row2[col.value] = col.type === 'number' ? parseFloat(row[col.value]) : row[col.value]
-          }
+          row2[col.value] = col.type === 'number' ? parseFloat(row[col.value]) : row[col.value]
         })
         dataRows.push(row2)
       })
@@ -365,6 +364,10 @@ export default {
       // if (!this.validateRows()) {
       //   return
       // }
+      this.rows.forEach(row => {
+        row.saved = true
+        row.stmt = row.stmtType === 'LBL' ? (row.stmtType + row.lbl) : row.stmtType
+      })
       const data = {func: 20, csub: 0, subr: this.program.subr, name: this.program.name, nrow: this.rows.length, rows: this.getDataRows()}
       this.saving = true
       newService(data).then(r => {
@@ -374,9 +377,17 @@ export default {
         } else {
         }
         this.saving = false
+      }, e => {
+        this.saving = false
+        this.$alert('Save failed')
+        throw e
       })
     },
     remove(row, i) {
+      if (row.saved === false) {
+        this.rows.splice(i, 1)
+        return
+      }
       const rows2 = this.rows.slice(0)
       rows2.splice(i, 1)
       const data = {func: 20, csub: 0, subr: this.program.subr, name: this.program.name, nrow: rows2.length, rows: this.getDataRows(rows2)}
@@ -442,12 +453,22 @@ export default {
           this.$alert(r.errt || 'Search failed')
           console.log(r)
         } else {
+          this.addProgramNameToRows(r.rows)
           this.rows2 = r.rows
           if (this.rows2.length === 0) {
             this.$alert('No data found')
           }
         }
         this.searching = false
+      })
+    },
+    addProgramNameToRows(rows) {
+      const map = {}
+      this.programs.forEach(item => {
+        map[item.subr] = item.name
+      })
+      rows.forEach(row => {
+        row.programName = map[row.subr]
       })
     },
   }
