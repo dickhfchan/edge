@@ -386,14 +386,15 @@ export default {
         this.rows.splice(i, 1)
         return
       }
-      const rows2 = this.rows.slice(0)
-      rows2.splice(i, 1)
-      const data = {func: 20, csub: 0, subr: this.program.subr, name: this.program.name, nrow: rows2.length, rows: this.getDataRows(rows2)}
-      newService(data).then(r => {
-        if (this.isServiceSuccessful(r, 'Remove failed')) {
-          this.rows.splice(i, 1)
-        }
-      })
+      // don't trigger save
+      // const rows2 = this.rows.slice(0)
+      // rows2.splice(i, 1)
+      // const data = {func: 20, csub: 0, subr: this.program.subr, name: this.program.name, nrow: rows2.length, rows: this.getDataRows(rows2)}
+      // newService(data).then(r => {
+      //   if (this.isServiceSuccessful(r, 'Remove failed')) {
+      //     this.rows.splice(i, 1)
+      //   }
+      // })
     },
     removeProgram() {
       this.$confirm('Are you sure to remove the program?').then(() => {

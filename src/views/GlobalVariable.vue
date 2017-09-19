@@ -143,7 +143,6 @@ export default {
     },
     remove(row, i) {
       this.rows.splice(i, 1)
-      this.save()
     },
   },
 }
