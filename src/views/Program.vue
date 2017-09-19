@@ -265,6 +265,15 @@ export default {
     document.removeEventListener('keydown', this.keydownEnter)
   },
   methods: {
+    isServiceSuccessful(result, errMsg) {
+      if (!result || result.errc > 0) {
+        this.$alert((result && result.errt) || errMsg)
+        console.log(result)
+        return false
+      } else {
+        return true
+      }
+    },
     getData() {
       return newService({func: 18}).then(data => {
         this.programs = data.rows
@@ -280,10 +289,7 @@ export default {
       const data = {func: 20, csub: 1, subr, name, nrow: 0, rows: []}
       this.saving = true
       newService(data).then(r => {
-        if (r.errc > 0) {
-          this.$alert(r.errt || 'Save failed')
-          console.log(r)
-        } else {
+        if (this.isServiceSuccessful(r, 'Save failed')) {
           this.programs.push({name, subr})
           this.newProgram.visible = false
           this.newProgram.name = null
@@ -371,16 +377,8 @@ export default {
       const data = {func: 20, csub: 0, subr: this.program.subr, name: this.program.name, nrow: this.rows.length, rows: this.getDataRows()}
       this.saving = true
       newService(data).then(r => {
-        if (r.errc > 0) {
-          this.$alert(r.errt || 'Save failed')
-          console.log(r)
-        } else {
-        }
+        this.isServiceSuccessful(r, 'Save failed')
         this.saving = false
-      }, e => {
-        this.saving = false
-        this.$alert('Save failed')
-        throw e
       })
     },
     remove(row, i) {
@@ -392,10 +390,7 @@ export default {
       rows2.splice(i, 1)
       const data = {func: 20, csub: 0, subr: this.program.subr, name: this.program.name, nrow: rows2.length, rows: this.getDataRows(rows2)}
       newService(data).then(r => {
-        if (r.errc > 0) {
-          this.$alert(r.errt || 'Remove failed')
-          console.log(r)
-        } else {
+        if (this.isServiceSuccessful(r, 'Remove failed')) {
           this.rows.splice(i, 1)
         }
       })
@@ -405,15 +400,13 @@ export default {
         const data = {func: 21, subr: this.program.subr}
         this.removing = true
         newService(data).then(r => {
-          if (r.errc > 0) {
-            this.removing = false
-            this.$alert(r.errt || 'Remove failed')
-            console.log(r)
-          } else {
+          if (this.isServiceSuccessful(r, 'Remove failed')) {
             this.subr = null
             this.getData().then(() => {
               this.removing = false
             })
+          } else {
+            this.removing = false
           }
         })
       })
@@ -426,12 +419,7 @@ export default {
       const data = {func: 22, nrow: this.rows.length, rows: this.getDataRows()}
       this.compiling = true
       newService(data).then(r => {
-        if (r.errc > 0) {
-          this.$alert(r.errt || 'Compile failed')
-          console.log(r)
-        } else {
-          console.log(r)
-        }
+        this.isServiceSuccessful(r, 'Compile failed')
         this.compiling = false
       })
     },
@@ -449,10 +437,7 @@ export default {
       const data = {'func': 23, 'srhm': this.searchMode.toLowerCase(), 'upca': this.searchMULC ? '1' : '0', 'wwrd': this.searchMWW ? '1' : '0', 'srhs': this.searchText || ''}
       this.searching = true
       newService(data).then(r => {
-        if (r.errc > 0) {
-          this.$alert(r.errt || 'Search failed')
-          console.log(r)
-        } else {
+        if (this.isServiceSuccessful(r, 'Search failed')) {
           this.addProgramNameToRows(r.rows)
           this.rows2 = r.rows
           if (this.rows2.length === 0) {

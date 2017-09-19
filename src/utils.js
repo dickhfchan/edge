@@ -124,20 +124,20 @@ export function sortRows(event, rows, columns) {
 }
 
 export function generateExcel(JSONData, FileName, ShowLabel) {
-    // 先转化json
+  // 先转化json
   var arrData = typeof JSONData !== 'object' ? JSON.parse(JSONData) : JSONData
   var excel = '<table>'
-    // 生成表头
+  // 生成表头
   var row = '<tr>'
   for (let i = 0; i < ShowLabel.length; i++) {
     row += '<td>' + ShowLabel[i] + '</td>'
   }
   excel += row + '</tr>'
-    // 循环生成表身
+  // 循环生成表身
   for (let i = 0; i < arrData.length; i++) {
     row = '<tr>'
     for (var j in arrData[i]) {
-//                    var name = arrData[i][index].name === "." ? "" : arrData[i][index].name;
+      //                    var name = arrData[i][index].name === "." ? "" : arrData[i][index].name;
       var td = arrData[i][j]
       row += '<td>' + td + '</td>'
     }

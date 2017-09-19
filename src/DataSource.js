@@ -29,7 +29,7 @@ export default class DataSource {
     })
     let i = 0
     this.websocket.addEventListener('message', (e) => {
-      const data = JSON.parse(e.data)
+      const data = e.data && JSON.parse(e.data)
       if (i === 0) {
         this.onlogin && this.onlogin(data)
       }
