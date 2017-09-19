@@ -84,9 +84,9 @@
           <div class="user-info">
             <b>Name</b> <span>{{state.user.username}}</span>
             <br>
-            <b>Default level</b> <span>{{state.user.info.defl}}</span>
+            <b>Default level</b> <span>{{userLevels[state.user.info.defl]}}</span>
             <br>
-            <b>No of allowed level</b> <span>{{state.user.info.nalw}}</span>
+            <b>No of allowed level</b> <span>{{userLevels[state.user.info.nalw]}}</span>
             <br>
             <b>Allowed level</b> <span>{{state.user.info.alwl.map(v => v.atxt).join(', ')}}</span>
           </div>
@@ -168,13 +168,24 @@ export default {
       drawer: false,
       rightDrawer: false,
       items: [
-         { title: 'Data Thread', icon: 'dashboard', route: {name: 'datathread'} },
-         { title: 'Global Variable', route: {name: 'globalVariable'} },
-         { title: 'Program', route: {name: 'program'} },
+        { title: 'Data Thread', icon: 'dashboard', route: {name: 'datathread'} },
+        { title: 'Global Variable', route: {name: 'globalVariable'} },
+        { title: 'Program', route: {name: 'program'} },
       ],
       mini: false,
       right: null,
       // right sidebar
+      userLevels: {
+        '0': ' VIEW',
+        '1': ' OPERATOR',
+        '2': ' DATA ENTRY',
+        '3': ' MAINTENANCE',
+        '4': ' SUPERVISOR',
+        '5': ' ENGINEER',
+        '6': ' DESIGNER',
+        '7': ' MANAGER',
+        '-1': ' ALL'
+      },
       changePasswordVisible: false,
       oldPassword: null,
       newPassword: null,

@@ -1,6 +1,14 @@
 <template>
   <v-layout row wrap class="ma-3">
-    <v-flex>
+    <v-flex v-if="data2" xs12>
+      <p class="data2-table-footer w-100">
+          <span>PLCComm: {{data2.Status.PLCComm}}</span>
+          <span>LineMode: {{data2.Status.LineMode}}</span>
+          <span>AlarmStatus: {{data2.Status.AlarmStatus}}</span>
+          <span>NoAlarms: {{data2.Status.NoAlarms}}</span>
+      </p>
+    </v-flex>
+    <v-flex xs12>
       <div style="width:250px;" class="mr-3">
         <v-select
         :single-line="true"
@@ -46,7 +54,13 @@
           </template>
         </v-data-table>
       </div>
-      <div class="flex-1 ml-4">
+      <div class="flex-1 ml-4" v-if="object1&&object1.objaddr==='temp'">
+        <div class="temperature-chart-labels">
+          <div class="temperature-chart-label" v-for="item in temperatureChartLabels">
+            <div class="block" :style="{backgroundColor: item.color}"></div>
+            <span class="text">{{item.text}}</span>
+          </div>
+        </div>
         <canvas class="temperature-chart"></canvas>
       </div>
     </v-flex>
@@ -63,12 +77,6 @@
             <td v-for="(header, i) in headers2" :class="{'text-xs-right': i > 0}">{{ props.item[header.value] }}</td>
           </template>
         </v-data-table>
-        <p class="data2-table-footer">
-            <span>PLCComm: {{data2.Status.PLCComm}}</span>
-            <span>LineMode: {{data2.Status.LineMode}}</span>
-            <span>AlarmStatus: {{data2.Status.AlarmStatus}}</span>
-            <span>NoAlarms: {{data2.Status.NoAlarms}}</span>
-        </p>
       </div>
     </v-flex>
 
@@ -92,6 +100,7 @@ export default {
       originData1: null,
       object1: null,
       temperatureUnit: 'C',
+      temperatureChartLabels: [],
       item1: null,
       cache: {
         data1: {}
@@ -323,7 +332,7 @@ export default {
         green: 'rgb(75, 192, 192)',
         blue: 'rgb(54, 162, 235)',
         purple: 'rgb(153, 102, 255)',
-        grey: 'rgb(231,233,237)'
+        grey: 'rgb(154, 154, 154)'
       }
       const colors = Object.values(chartColors)
       const ctx = this.$el.querySelector('.temperature-chart').getContext('2d')
@@ -355,9 +364,13 @@ export default {
                 suggestedMax: 100,
               }
             }]
-          }
+          },
+          legend: {
+            display: false
+          },
         },
       })
+      this.updateTemperatureChartDatasetVisibility()
     },
     checkAndUpdateTemperatureChart() {
       if (this.temperatureChart) {
@@ -381,9 +394,17 @@ export default {
     updateTemperatureChartDatasetVisibility() {
       if (this.temperatureChart) {
         const chart = this.temperatureChart
+        const labels = []
         chart.data.datasets.forEach((dataset, i) => {
           dataset.hidden = dataset.temperatureUnit !== this.temperatureUnit
+          if (!dataset.hidden) {
+            labels.push({
+              color: dataset.backgroundColor,
+              text: dataset.label,
+            })
+          }
         })
+        this.temperatureChartLabels = labels
         chart.update()
       }
     },
@@ -422,5 +443,19 @@ export default {
       margin-right: 0;
     }
   }
+}
+.temperature-chart-label {
+    display: inline-block;
+    margin-right: 1em;
+
+    .block {
+        width: 30px;
+        height: 1em;
+        display: inline-block;
+    }
+
+    .text {
+        font-size: .9em;
+    }
 }
 </style>

@@ -12,52 +12,17 @@
       </div>
       <div class="flex flex-align-center" style="padding-bottom: 20px;">
         <template v-if="program">
-          <v-btn error dark class="ml-0" @click="removeProgram">
-            Remove Program
-          </v-btn>
           <v-btn primary dark @click="compile" :loading="compiling" :disabled="compiling">
             Compile
             <span slot="loader" class="loader"><v-icon light>cached</v-icon></span>
           </v-btn>
+          <v-btn primary dark class="" @click="save" :loading="saving" :disabled="saving">
+            Save
+            <span slot="loader" class="loader"><v-icon light>cached</v-icon></span>
+          </v-btn>
         </template>
 
-        <v-dialog v-model="newProgram.visible" persistent>
-          <v-btn slot="activator">New Program</v-btn>
-          <v-card>
-            <v-card-title class="headline">New Program</v-card-title>
-            <v-card-text>
-              <v-layout row wrap>
-                <v-flex>
-                  <form @submit.prevent="saveNewProgram">
-                    <v-layout row wrap>
-                      <v-flex xs12>
-                        <v-text-field
-                          label="Name"
-                          v-model="newProgram.name"
-                          type="text"
-                          :rules="[$store.state.rules.required]"
-                        ></v-text-field>
-                      </v-flex>
-                      <v-flex xs12>
-                        <v-btn type="submit" block :loading="saving" :disabled="saving">
-                          Save
-                          <span slot="loader" class="loader">
-                            <v-icon light>cached</v-icon>
-                          </span>
-                        </v-btn>
-                      </v-flex>
-                    </v-layout>
-                  </form>
-                </v-flex>
-              </v-layout>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn warning @click.native="newProgram.visible = false">Close</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
+        <!-- search -->
         <v-dialog v-model="searchDialog" width="1000" persistent>
           <v-btn slot="activator">Search</v-btn>
           <v-card>
@@ -117,15 +82,48 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-      </div>
-    </v-flex>
 
-    <v-flex xs12 v-show="program">
-      <v-btn @click="newItem" class="ml-0">New</v-btn>
-      <v-btn primary dark class="ml-0" @click="save" :loading="saving" :disabled="saving">
-        Save
-        <span slot="loader" class="loader"><v-icon light>cached</v-icon></span>
-      </v-btn>
+        <v-btn v-if="program" error dark class="ml-0" @click="removeProgram">
+          Remove Program
+        </v-btn>
+
+        <v-dialog v-model="newProgram.visible" persistent>
+          <v-btn slot="activator">New Program</v-btn>
+          <v-card>
+            <v-card-title class="headline">New Program</v-card-title>
+            <v-card-text>
+              <v-layout row wrap>
+                <v-flex>
+                  <form @submit.prevent="saveNewProgram">
+                    <v-layout row wrap>
+                      <v-flex xs12>
+                        <v-text-field
+                          label="Name"
+                          v-model="newProgram.name"
+                          type="text"
+                          :rules="[$store.state.rules.required]"
+                        ></v-text-field>
+                      </v-flex>
+                      <v-flex xs12>
+                        <v-btn type="submit" block :loading="saving" :disabled="saving">
+                          Save
+                          <span slot="loader" class="loader">
+                            <v-icon light>cached</v-icon>
+                          </span>
+                        </v-btn>
+                      </v-flex>
+                    </v-layout>
+                  </form>
+                </v-flex>
+              </v-layout>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn warning @click.native="newProgram.visible = false">Close</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </div>
     </v-flex>
 
     <v-flex xs12>
@@ -155,10 +153,10 @@
                   <span v-else>{{row[col.value]}}</span>
                 </template>
                 <template v-else>
-                  <v-btn error small class="" @click="remove(row, i)">
+                  <v-btn error small class="" style="margin: 3px;" @click="remove(row, i)">
                     Remove
                   </v-btn>
-                  <v-btn small class="ml-0" @click="insert(i)">
+                  <v-btn small class="" style="margin: 1px;" @click="insert(i)">
                     Insert
                   </v-btn>
                 </template>
@@ -208,8 +206,8 @@ export default {
       // 2
       searchText: null,
       headers2: [
-        {text: 'Line number', value: 'line', align: 'left', width: '50px', sortAble: false},
         {text: 'Program name', value: 'programName', align: 'left', width: 'auto', sortAble: false},
+        {text: 'Line number', value: 'line', align: 'left', width: '50px', sortAble: false},
         {text: 'Start at character position', value: 'chnu', align: 'left', width: '50px', sortAble: false},
         {text: 'Description', value: 'desc', align: 'left', sortAble: false},
       ],
@@ -382,19 +380,7 @@ export default {
       })
     },
     remove(row, i) {
-      if (row.saved === false) {
-        this.rows.splice(i, 1)
-        return
-      }
-      // don't trigger save
-      // const rows2 = this.rows.slice(0)
-      // rows2.splice(i, 1)
-      // const data = {func: 20, csub: 0, subr: this.program.subr, name: this.program.name, nrow: rows2.length, rows: this.getDataRows(rows2)}
-      // newService(data).then(r => {
-      //   if (this.isServiceSuccessful(r, 'Remove failed')) {
-      //     this.rows.splice(i, 1)
-      //   }
-      // })
+      this.rows.splice(i, 1)
     },
     removeProgram() {
       this.$confirm('Are you sure to remove the program?').then(() => {
