@@ -86,8 +86,6 @@
             <br>
             <b>Default level</b> <span>{{userLevels[state.user.info.defl]}}</span>
             <br>
-            <b>No of allowed level</b> <span>{{userLevels[state.user.info.nalw]}}</span>
-            <br>
             <b>Allowed level</b> <span>{{state.user.info.alwl.map(v => v.atxt).join(', ')}}</span>
           </div>
           <div class="">

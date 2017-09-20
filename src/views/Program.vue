@@ -135,20 +135,24 @@
           class="elevation-1 program-table"
         >
           <tbody slot="tbody">
-            <tr v-for="(row, i) in rows" @mouseenter="hoveringRow=row" @mouseleave="hoveringRow=null">
+            <tr v-for="(row, i) in rows" @mouseenter="hoveringRow=row" @mouseleave="hoveringRow=null" :class="'row-'+row.no">
               <td v-for="col in headers" class="text-xs-left">
                 <template v-if="col.value !== 'actions'">
                   <template v-if="col.editAble!==false">
                     <input v-if="col.type === 'number'" type="number" v-model="row[col.value]" />
                     <template v-else-if="col.value==='stmt'">
-                      <select :class="{lbl: row.stmtType==='LBL'}" name="" v-model="row.stmtType">
+                      <select :class="{lbl: row.stmtType==='LBL'}" name="" v-model="row.stmtType"
+                        @focus="focusingRow=row" @blur="focusingRow=null"
+                      >
                         <option v-for="item in statements" :value="item.value">
                           {{item.text}}
                         </option>
                       </select>
-                      <input v-if="row.stmtType==='LBL'" type="number" v-model="row.lbl" class="lbl" />
+                      <input v-if="row.stmtType==='LBL'" type="number" v-model="row.lbl" class="lbl"
+                        @focus="focusingRow=row" @blur="focusingRow=null"
+                       />
                     </template>
-                    <input v-else type="text" v-model="row[col.value]" />
+                    <input v-else type="text" v-model="row[col.value]" @focus="exprInputFocus($event,row)" @blur="exprInputBlur" class="expr" />
                   </template>
                   <span v-else>{{row[col.value]}}</span>
                 </template>
@@ -203,6 +207,7 @@ export default {
       },
       // insert when keydown enter
       hoveringRow: null,
+      focusingRow: null,
       // 2
       searchText: null,
       headers2: [
@@ -217,6 +222,9 @@ export default {
       searchMode: 'Subroutine',
       searchMULC: false,
       searchMWW: false,
+      // not reactive
+      // focusingInput
+      // focusingInputRow
     }
   },
   computed: {
@@ -410,10 +418,47 @@ export default {
         this.compiling = false
       })
     },
+    exprInputFocus(e, row) {
+      this.focusingInput = e.target
+      this.focusingInputRow = row
+      this.focusingRow = row
+    },
+    exprInputBlur() {
+      this.focusingInput = null
+      this.focusingInputRow = null
+      this.focusingRow = null
+    },
     keydownEnter(e) {
       if (e.key === 'Enter') {
-        if (this.hoveringRow) {
-          this.insert(this.rows.indexOf(this.hoveringRow))
+        const actionRow = this.focusingRow || this.hoveringRow
+        if (actionRow) {
+          const {focusingInput, focusingInputRow} = this
+          let selectionOrAfterCursor
+          if (focusingInput) {
+            const startPos = focusingInput.selectionStart
+            const endPos = focusingInput.selectionEnd
+            const expr0 = focusingInputRow.expr
+            if (startPos === endPos) {
+              // no selection
+              focusingInputRow.expr = expr0.substr(0, startPos)
+              selectionOrAfterCursor = expr0.substr(startPos)
+            } else {
+              // has selection
+              focusingInputRow.expr = expr0.substr(0, startPos) + expr0.substr(endPos)
+              selectionOrAfterCursor = expr0.substr(startPos, endPos)
+            }
+            this.$nextTick(() => {
+              const index = this.rows.indexOf(actionRow) + 1
+              const insertedRow = this.rows[index]
+              insertedRow.expr = selectionOrAfterCursor
+              const insertRowInput = document.querySelector(`.program-table .row-${insertedRow.no} input.expr`)
+              insertRowInput.focus()
+              setTimeout(function () {
+                insertRowInput.setSelectionRange(0, 0)
+              }, 50)
+            })
+          }
+          this.insert(this.rows.indexOf(actionRow))
         }
       }
     },

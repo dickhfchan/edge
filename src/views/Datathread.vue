@@ -431,17 +431,11 @@ export default {
   color: #fff;
   padding: 5px;
   margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
   span{
-    display: inline-block;
-    margin-right: 200px;
-  }
-  @media (max-width:1500px) {
-    display: flex;
-    justify-content: space-between;
-    span{
-      display: inline;
-      margin-right: 0;
-    }
+    display: inline;
+    margin-right: 0;
   }
 }
 .temperature-chart-label {
