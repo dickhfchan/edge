@@ -354,6 +354,9 @@ export default {
       const originData = this.originData1
       this.$set(data, 'timestamp', originData.TimeStamp)
       this.$set(data, 'datetime', originData.DateTime)
+      if (window.xx) {
+        this.originData1.Objects[0].Items[0].plal = 30
+      }
       originData.Objects.forEach(item => {
         const obj = data.objects.find(v => v.objaddr === item.ObjectName)
         if (obj) {
@@ -365,7 +368,16 @@ export default {
             })
           })
           if (JSON.stringify(tempItems) !== JSON.stringify(obj.items)) {
-            obj.items = tempItems
+            const len1 = obj.items.length
+            const len2 = tempItems.length
+            const len = len1 > len2 ? len1 : len2
+            for (let i = 0; i < len; i++) {
+              if (!obj.items[i]) {
+                obj.items[i] = tempItems[i]
+              } else {
+                Object.assign(obj.items[i], tempItems[i])
+              }
+            }
           }
         }
       })
