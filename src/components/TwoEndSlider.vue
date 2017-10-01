@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import {onDOM, offDOM} from 'helper-js'
+import {onDOM, offDOM, addClass, removeClass} from 'helper-js'
 export default {
   // components:
   props: {
@@ -63,10 +63,13 @@ export default {
       this.trackWidth = this.$refs.greyTrack.offsetWidth
       this.rangeLength = this.max - this.min
 
+      addClass(document.body, 'no-user-select')
+
       this.mousemoveWrapped = (e) => {
         this.mousemove(e)
       }
       this.mouseupWrapped = (e) => {
+        removeClass(document.body, 'no-user-select')
         offDOM(document, 'mousemove', this.mousemoveWrapped)
         offDOM(document, 'mouseup', this.mouseupWrapped)
         this[type].dragging = false
@@ -109,6 +112,14 @@ export default {
   },
 }
 </script>
+
+<style>
+/* global */
+.no-user-select{
+  user-select: none;
+}
+</style>
+
 <style lang="scss">
 .TwoEndSlider{
   user-select: none;
