@@ -49,7 +49,7 @@
           {{$store.state.brand}}
         </div>
         <v-list class="pt-0" dense>
-          <v-list-tile v-for="item in items" :key="item.title"
+          <v-list-tile v-for="item in items" :key="item.title" v-if="!item.isAllowed || item.isAllowed()"
             :href="item.route && $router.resolve(item.route).href" @click.prevent="item.route && $router.push(item.route)"
           >
             <v-list-tile-action>
@@ -169,21 +169,12 @@ export default {
         { title: 'Data Thread', icon: 'dashboard', route: {name: 'datathread'} },
         { title: 'Global Variable', route: {name: 'globalVariable'} },
         { title: 'Program', route: {name: 'program'} },
+        { title: 'User', route: {name: 'user'}, isAllowed: () => this.$store.state.user.name === 'root' },
       ],
       mini: false,
       right: null,
       // right sidebar
-      userLevels: {
-        '0': ' VIEW',
-        '1': ' OPERATOR',
-        '2': ' DATA ENTRY',
-        '3': ' MAINTENANCE',
-        '4': ' SUPERVISOR',
-        '5': ' ENGINEER',
-        '6': ' DESIGNER',
-        '7': ' MANAGER',
-        '-1': ' ALL'
-      },
+      userLevels: this.$store.state.userLevels,
       changePasswordVisible: false,
       oldPassword: null,
       newPassword: null,

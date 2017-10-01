@@ -2,10 +2,10 @@
   <v-layout row wrap class="ma-3">
     <v-flex v-if="data2" xs12>
       <p class="data2-table-footer w-100">
-          <span>PLCComm: {{data2.Status.PLCComm}}</span>
-          <span>LineMode: {{data2.Status.LineMode}}</span>
-          <span>AlarmStatus: {{data2.Status.AlarmStatus}}</span>
-          <span>NoAlarms: {{data2.Status.NoAlarms}}</span>
+          <span>Communication: {{data2.Status.PLCComm}}</span>
+          <span>Mode: {{data2.Status.LineMode}}</span>
+          <span>Status: {{data2.Status.AlarmStatus}}</span>
+          <span>No of Alarm: {{data2.Status.NoAlarms}}</span>
       </p>
     </v-flex>
     <v-flex xs12>
@@ -53,6 +53,12 @@
             <td class="text-xs-right">{{ props.item.value }}</td>
           </template>
         </v-data-table>
+
+        <div v-if="object1&&object1.objaddr==='temp'&&item1" class="mt-5">
+          <h5>Y - axle</h5>
+          <TwoEndSlider v-model="userCustomTemperatureChartRange" :min="temperatureChartRange[0]" :max="temperatureChartRange[1]"
+            class="pa-0"></TwoEndSlider>
+        </div>
       </div>
       <div class="flex-1 ml-4" v-if="object1&&object1.objaddr==='temp'">
         <div class="temperature-chart-labels">
@@ -74,7 +80,9 @@
           class="elevation-1"
         >
           <template slot="items" scope="props">
-            <td v-for="(header, i) in headers2" :class="{'text-xs-right': i > 0}">{{ props.item[header.value] }}</td>
+            <td v-for="(header, i) in headers2" :class="{'text-xs-right': i > 0}" @click="clickData2Row(props.item)">
+              {{ props.item[header.value] }}
+            </td>
           </template>
         </v-data-table>
       </div>
@@ -90,8 +98,11 @@ import { isNumeric } from 'helper-js'
 import {format} from 'date-functions'
 import DataSource from '@/DataSource'
 import Chart from 'chart.js'
+import TwoEndSlider from '@/components/TwoEndSlider.vue'
+import { newService } from '@/utils'
 
 export default {
+  components: {TwoEndSlider},
   data() {
     return {
       title: 'Datathread',
@@ -107,6 +118,7 @@ export default {
       },
       data2: null,
       temperatureChartMaxTimestampCount: 50,
+      userCustomTemperatureChartRange: null,
       headers2: [
         // {
         //   'text': 'WordIX',
@@ -173,7 +185,7 @@ export default {
           const top3 = flds.splice(0, 3)
           const dataInConfig = this.configuration.config[this.data1.objects.indexOf(this.object1)].data[this.object1.items.indexOf(this.item1)].datafields
           top3.forEach(fld => {
-            rows.push({text: fld.text, value: dataInConfig[fld.name]})
+            rows.push({text: fld.text, value: dataInConfig[fld.name], field: fld})
           })
         }
         return rows.concat(flds.map(fld => {
@@ -191,7 +203,7 @@ export default {
               val = `${val} ${oFld.fldunits}`
             }
           }
-          return { text: fld.text, value: val, originalValue, unit: oFld.fldunits }
+          return { text: fld.text, value: val, originalValue, unit: oFld.fldunits, field: fld }
         }))
       } catch (e) {
         return []
@@ -212,6 +224,21 @@ export default {
         return r
       } else {
         return this.itemRows1All
+      }
+    },
+    temperatureChartRange() {
+      if (this.object1 && this.object1.objaddr === 'temp') {
+        let max, min
+        this.itemRows1.forEach(row => {
+        const fld = row.field.original
+          if (max == null || max < fld.fldmaxval) {
+            max = fld.fldmaxval
+          }
+          if (min == null || min > fld.fldminval) {
+            min = fld.fldminval
+          }
+        })
+        return [min, max]
       }
     },
   },
@@ -239,6 +266,25 @@ export default {
     },
     temperatureUnit() {
       this.updateTemperatureChartDatasetVisibility()
+    },
+    temperatureChartRange(v) {
+      if (!this.userCustomTemperatureChartRangeInited && v[0] != null) {
+        this.userCustomTemperatureChartRangeInited = true
+        this.userCustomTemperatureChartRange = v.slice(0)
+      }
+      if (this.userCustomTemperatureChartRangeInited) {
+        const custom = this.userCustomTemperatureChartRange
+        if (custom[0] < v[0]) {
+          const cp = custom.slice(0)
+          cp[0] = v[0]
+          this.userCustomTemperatureChartRange = cp
+        }
+        if (custom[1] > v[1]) {
+          const cp = custom.slice(0)
+          cp[1] = v[1]
+          this.userCustomTemperatureChartRange = cp
+        }
+      }
     },
   },
   created() {
@@ -360,8 +406,10 @@ export default {
         options: {
           scales: {
             yAxes: [{
+              id: 'y-axis-0',
               ticks: {
-                suggestedMax: 100,
+                min: this.temperatureChartRange[0],
+                max: this.temperatureChartRange[1],
               }
             }]
           },
@@ -375,6 +423,7 @@ export default {
     checkAndUpdateTemperatureChart() {
       if (this.temperatureChart) {
         const chart = this.temperatureChart
+        // update data
         chart.data.labels.push(format(new Date(this.data1.datetime), 'mm:ss'))
         chart.data.datasets.forEach((dataset, i) => {
           dataset.data.push(this.itemRows1All[i + 3].originalValue)
@@ -388,6 +437,25 @@ export default {
             dataset.data.splice(0, 1)
           })
         }
+        // update y axle
+        const ticks = chart.options.scales.yAxes[0]
+        const custom = this.userCustomTemperatureChartRange
+        if (ticks.min !== custom[0] || ticks.max !== custom[1]) {
+          chart.options.scales.yAxes = Chart.helpers.scaleMerge(Chart.defaults.scale, {yAxes:
+            [{
+             id: 'y-axis-0',
+             ticks: {
+               min: custom[0],
+               max: custom[1],
+             },
+            }]
+          }).yAxes
+        }
+          // ticks.min = custom[0]
+        // }
+        // if (ticks.max !== custom[1]) {
+        //   ticks.max = custom[1]
+        // }
         chart.update()
       }
     },
@@ -413,6 +481,14 @@ export default {
         this.temperatureChart.destroy()
         this.temperatureChart = null
       }
+    },
+    clickData2Row(row) {
+      console.log('data2 row clicked, start send message to backend');
+      newService({func: 8, wdix: row.WordIX, btix: row.BitIX, actn: "acknowledge"}).then(data => {
+        console.log('send message to backend successfully');
+      }, () => {
+        console.warn('send message to backend failed');
+      })
     },
   },
 }

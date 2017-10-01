@@ -21,6 +21,17 @@ const store = new Vuex.Store({
     rules: {
       required: value => (value == null || value === '') ? 'Required' : true,
     },
+    userLevels: {
+      '0': ' VIEW',
+      '1': ' OPERATOR',
+      '2': ' DATA ENTRY',
+      '3': ' MAINTENANCE',
+      '4': ' SUPERVISOR',
+      '5': ' ENGINEER',
+      '6': ' DESIGNER',
+      '7': ' MANAGER',
+      '-1': ' ALL'
+    },
   },
   mutations: {
     initialized(state, val) { state.initialized = val },
