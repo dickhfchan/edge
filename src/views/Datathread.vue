@@ -360,9 +360,6 @@ export default {
       const originData = this.originData1
       this.$set(data, 'timestamp', originData.TimeStamp)
       this.$set(data, 'datetime', originData.DateTime)
-      if (window.xx) {
-        this.originData1.Objects[0].Items[0].plal = 30
-      }
       originData.Objects.forEach(item => {
         const obj = data.objects.find(v => v.objaddr === item.ObjectName)
         if (obj) {
