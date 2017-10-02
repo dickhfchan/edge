@@ -13,8 +13,7 @@
           <tr v-for="(row, i) in rows">
             <td v-for="col in headers" class="text-xs-left">
               <template v-if="col.value !== 'actions'">
-                <input v-if="col.type === 'number'" type="number" v-model="row[col.value]" v-tooltip:top="{ html: row.tooltip }" />
-                <input v-else type="text" v-model="row[col.value]" v-tooltip:top="{ html: row.tooltip }" />
+                {{row[col.value]}}
               </template>
               <template v-else>
                 <v-btn error small class="" @click="remove(row, i)">
