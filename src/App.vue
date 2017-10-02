@@ -153,14 +153,18 @@
        </v-card-actions>
      </v-card>
    </v-dialog>
+   <!-- prompt -->
+   <Prompt></Prompt>
 </v-app>
 </template>
 
 <script>
 import {newService} from '@/utils.js'
+import Prompt from '@/components/Prompt'
 
 export default {
   name: 'app',
+  components: {Prompt},
   data () {
     return {
       drawer: false,

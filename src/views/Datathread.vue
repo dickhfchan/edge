@@ -46,11 +46,14 @@
         <v-data-table
             :items="itemRows1"
             hide-actions
-            class=""
+            class="data1-list"
           >
           <template slot="items" scope="props">
             <td class="">{{props.item.text}}</td>
-            <td class="text-xs-right">{{ props.item.value }}</td>
+            <td class="text-xs-right relative">
+              {{ props.item.value }}
+              <v-icon v-if="props.item.field.original.flddbaddr==='-'" @click="editData1ListItemValue(props.item)" class="edit-btn">mode_edit</v-icon>
+            </td>
           </template>
         </v-data-table>
 
@@ -268,6 +271,9 @@ export default {
       this.updateTemperatureChartDatasetVisibility()
     },
     temperatureChartRange(v) {
+      if (!this.object1 || this.object1.objaddr !== 'temp') {
+        return
+      }
       if (!this.userCustomTemperatureChartRangeInited && v[0] != null) {
         this.userCustomTemperatureChartRangeInited = true
         this.userCustomTemperatureChartRange = v.slice(0)
@@ -494,6 +500,9 @@ export default {
         this.temperatureChart = null
       }
     },
+    editData1ListItemValue(item) {
+
+    },
     clickData2Row(row) {
       console.log('data2 row clicked, start send message to backend');
       newService({func: 8, wdix: row.WordIX, btix: row.BitIX, actn: "acknowledge"}).then(data => {
@@ -511,6 +520,18 @@ export default {
     border: 1px solid #ccc;
     thead{
       display: none;
+    }
+  }
+  .data1-list{
+    .edit-btn{
+      font-size: 18px;
+      position: absolute;
+      top: 6px;
+      right: 2px;
+      cursor: pointer;
+      &:hover{
+        color: #00bcd4;
+      }
     }
   }
 }
