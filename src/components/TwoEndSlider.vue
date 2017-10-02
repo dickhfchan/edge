@@ -1,5 +1,13 @@
 <template>
   <div class="input-group input-group--dirty input-group--slider TwoEndSlider">
+    <div class="values">
+      <div class="start-value value">
+        {{Math.round(value[0])}}
+      </div>
+      <div class="end-value value">
+        {{Math.round(value[1])}}
+      </div>
+    </div>
     <div class="slider">
       <div class="slider__track__container">
         <div class="slider__track" style="transform: scaleX(1) translateX(8px);" ref="greyTrack"></div>
@@ -123,6 +131,16 @@ export default {
 <style lang="scss">
 .TwoEndSlider{
   user-select: none;
+  flex-direction: column;
+  .values{
+    .value{
+      color: #232323;
+    }
+    .start-value{
+      float: left;
+    }
+    .end-value{float: right;}
+  }
   .slider__track, .slider__track-fill{
     transition: none;
   }
