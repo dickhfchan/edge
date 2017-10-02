@@ -123,6 +123,8 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+
+        <v-btn v-if="program" @click="newItem">New Row</v-btn>
       </div>
     </v-flex>
 
