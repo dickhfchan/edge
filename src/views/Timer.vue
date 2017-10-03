@@ -56,6 +56,15 @@ const dayMapping = {
   'Sat-Sun': 'Saturday - Sunday',
 }
 
+const sencondsFormat = (seconds) => {
+  const m0 = seconds / 60
+  const h = Math.floor(m0 / 60)
+  const m = Math.floor(m0 % 60)
+  const hh = h < 10 ? `0${h}` : h.toString()
+  const mm = m < 10 ? `0${m}` : m.toString()
+  return `${hh}:${mm}`
+}
+
 export default {
   components: {Datatable},
   data() {
@@ -85,8 +94,8 @@ export default {
         channel.state = channel.stat
         channel.rows.forEach(row => {
           row.dayText = dayMapping[row.cday]
-          row.timeOnText = row.tion
-          row.timeOffText = row.tiof
+          row.timeOnText = sencondsFormat(row.tion)
+          row.timeOffText = sencondsFormat(row.tiof)
         })
       })
       this.originalData = data
