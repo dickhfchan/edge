@@ -173,6 +173,7 @@ export default {
         { title: 'Data Thread', icon: 'dashboard', route: {name: 'datathread'} },
         { title: 'Global Variable', route: {name: 'globalVariable'} },
         { title: 'Program', route: {name: 'program'} },
+        { title: 'Timer', route: {name: 'timer'} },
         { title: 'User', route: {name: 'user'}, isAllowed: () => this.$store.state.user.name === 'root' },
       ],
       mini: false,
