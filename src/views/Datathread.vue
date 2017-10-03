@@ -52,7 +52,9 @@
             <td class="">{{props.item.text}}</td>
             <td class="text-xs-right relative">
               {{ props.item.value }}
-              <v-icon v-if="props.item.field.original.flddbaddr==='-'" @click="editData1ListItemValue(props.item)" class="edit-btn">mode_edit</v-icon>
+              <span @click="editData1ListItemValue(props.item)">
+                <v-icon v-if="props.item.field.original.flddbaddr==='-'" class="edit-btn">mode_edit</v-icon>
+              </span>
             </td>
           </template>
         </v-data-table>
@@ -498,7 +500,19 @@ export default {
       }
     },
     editData1ListItemValue(item) {
-
+      this.$prompt('Edit', item.originalValue).then(value => {
+        if (!isFinite(value)) {
+          this.$alert('Input invalid')
+          return
+        }
+        const decimal = item.field.original.flddecim
+        value = Math.floor(value * Math.pow(10, decimal))
+        newService({func: 25, objn: this.object1.objaddr, item: parseInt(this.item1.text), fldn: item.field.name, valn: value}).then(result => {
+          if (!result || result.errc > 0) {
+            this.$alert((result && result.errt) || `Save failed: ${JSON.stringify(result)}`)
+          }
+        })
+      })
     },
     clickData2Row(row) {
       console.log('data2 row clicked, start send message to backend');
