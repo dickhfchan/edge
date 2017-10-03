@@ -43,6 +43,19 @@
 <script>
 import Datatable from '../components/Datatable.vue'
 import {newService} from '@/utils'
+
+const dayMapping = {
+  Mon: 'Monday',
+  Tue: 'Tuesday',
+  Wed: 'Wednesday',
+  Thu: 'Thursday',
+  Fri: 'Friday',
+  Sat: 'Saturday',
+  Sun: 'Sunday',
+  'Mon-Fri': 'Monday - Friday',
+  'Sat-Sun': 'Saturday - Sunday',
+}
+
 export default {
   components: {Datatable},
   data() {
@@ -53,7 +66,7 @@ export default {
       channel: null,
       headers: [
         {text: 'Row', value: 'rnum', align: 'left', sortAble: false},
-        {text: 'Day - period', value: 'cday', align: 'left', sortAble: false},
+        {text: 'Day - period', value: 'dayText', align: 'left', sortAble: false},
         {text: 'Time on', value: 'timeOnText', align: 'left', sortAble: false},
         {text: 'Time off', value: 'timeOffText', align: 'left', sortAble: false},
       ],
@@ -71,6 +84,7 @@ export default {
         channel.description = channel.desc
         channel.state = channel.stat
         channel.rows.forEach(row => {
+          row.dayText = dayMapping[row.cday]
           row.timeOnText = row.tion
           row.timeOffText = row.tiof
         })
