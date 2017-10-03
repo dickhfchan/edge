@@ -34,10 +34,16 @@
         label="Unit"
         ></v-select>
       </div>
-      <div style="align-items:center; padding:18px 0;">
+      <div style="align-items:center; padding:18px 0;" class="mr-3">
         <div class="" style="height: 30px; display: flex; align-items: flex-end;">
           {{data1.datetime}}
         </div>
+      </div>
+
+      <div v-if="object1&&object1.objaddr==='temp'&&item1" class="flex-1 flex" style="position: relative; top: -8px;align-items: center;">
+        <div class="mr-3">Y - axle</div>
+        <TwoEndSlider v-model="userCustomTemperatureChartRange" :min="temperatureChartRange[0]" :max="temperatureChartRange[1]"
+          class="pa-0 flex-1 chart-range-slider"></TwoEndSlider>
       </div>
     </v-flex>
 
@@ -58,12 +64,6 @@
             </td>
           </template>
         </v-data-table>
-
-        <div v-if="object1&&object1.objaddr==='temp'&&item1" class="mt-5">
-          <h5>Y - axle</h5>
-          <TwoEndSlider v-model="userCustomTemperatureChartRange" :min="temperatureChartRange[0]" :max="temperatureChartRange[1]"
-            class="pa-0"></TwoEndSlider>
-        </div>
       </div>
       <div class="flex-1 ml-4" v-if="object1&&object1.objaddr==='temp'">
         <div class="temperature-chart-labels">
@@ -243,7 +243,7 @@ export default {
             min = fld.fldminval
           }
         })
-        return [min, max]
+        return [min && min * 0.8, max && max * 1.2]
       }
     },
   },
@@ -280,19 +280,19 @@ export default {
         this.userCustomTemperatureChartRangeInited = true
         this.userCustomTemperatureChartRange = v.slice(0)
       }
-      if (this.userCustomTemperatureChartRangeInited) {
-        const custom = this.userCustomTemperatureChartRange
-        if (custom[0] < v[0]) {
-          const cp = custom.slice(0)
-          cp[0] = v[0]
-          this.userCustomTemperatureChartRange = cp
-        }
-        if (custom[1] > v[1]) {
-          const cp = custom.slice(0)
-          cp[1] = v[1]
-          this.userCustomTemperatureChartRange = cp
-        }
-      }
+      // if (this.userCustomTemperatureChartRangeInited) {
+      //   const custom = this.userCustomTemperatureChartRange
+      //   if (custom[0] < v[0]) {
+      //     const cp = custom.slice(0)
+      //     cp[0] = v[0]
+      //     this.userCustomTemperatureChartRange = cp
+      //   }
+      //   if (custom[1] > v[1]) {
+      //     const cp = custom.slice(0)
+      //     cp[1] = v[1]
+      //     this.userCustomTemperatureChartRange = cp
+      //   }
+      // }
     },
   },
   created() {
@@ -571,5 +571,14 @@ export default {
     .text {
         font-size: .9em;
     }
+}
+.chart-range-slider{
+  position: relative;
+  top: 2px;
+  .values{
+    position: absolute;
+    width: 100%;
+    top: -15px;
+  }
 }
 </style>
