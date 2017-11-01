@@ -65,7 +65,7 @@
           </template>
         </v-data-table>
       </div>
-      <div class="flex-1 ml-4" v-if="object1&&object1.objaddr==='temp'">
+      <div class="ml-4" v-if="object1&&object1.objaddr==='temp'" style="width:1000px;">
         <div class="temperature-chart-labels">
           <div class="temperature-chart-label" v-for="item in temperatureChartLabels">
             <div class="block" :style="{backgroundColor: item.color}"></div>
@@ -122,7 +122,7 @@ export default {
         data1: {}
       },
       data2: null,
-      temperatureChartMaxTimestampCount: 50,
+      temperatureChartMaxTimestampCount: 100,
       userCustomTemperatureChartRange: null,
       headers2: [
         // {
