@@ -55,15 +55,15 @@
               <v-flex xs12>
                 <v-select
                   v-bind:items="userLevelsArr"
-                  v-model="userForm.data.defaultLevel"
-                  :rules="[rules.required]"
+                  v-model="userForm.data.allowedLevel"
                   item-text="text"
                   item-value="value"
-                  label="Default level"
+                  multiple
+                  label="Allowed level"
                   bottom
                 ></v-select>
               </v-flex>
-              <v-flex xs12>
+              <!-- <v-flex xs12>
                 <v-select
                   v-bind:items="userLevelsArr"
                   v-model="userForm.data.noOfAllowedLevel"
@@ -73,15 +73,15 @@
                   label="No of allowed level"
                   bottom
                 ></v-select>
-              </v-flex>
+              </v-flex> -->
               <v-flex xs12>
                 <v-select
-                  v-bind:items="userLevelsArr"
-                  v-model="userForm.data.allowedLevel"
+                  v-bind:items="userLevelsArrDefault"
+                  v-model="userForm.data.defaultLevel"
+                  :rules="[rules.required]"
                   item-text="text"
                   item-value="value"
-                  multiple
-                  label="Allowed level"
+                  label="Default level"
                   bottom
                 ></v-select>
               </v-flex>
@@ -111,7 +111,7 @@ export default {
     const userLevelsArr = []
     for (var key in userLevels) {
       userLevelsArr.push({
-        value: key,
+        value: parseInt(key),
         text: userLevels[key],
       })
     }
@@ -138,6 +138,13 @@ export default {
     }
   },
   computed: {
+    userLevelsArrDefault() {
+      try {
+        return this.userLevelsArr.filter(v => this.userForm.data.allowedLevel.includes(v.value))
+      } catch (e) {
+        return []
+      }
+    },
   },
   created() {
     this.getData()
@@ -206,7 +213,7 @@ export default {
       }
       this.saving = true
       const data = {func: 6, cusr: mode === 'add' ? 1 : 0, name:input.name, pass: input.password, tout: parseInt(input.timeout),
-        defl: parseInt(input.defaultLevel), nalw: parseInt(input.noOfAllowedLevel), alwl: input.allowedLevel.map(v => parseInt(v))
+        defl: parseInt(input.defaultLevel), nalw: input.allowedLevel.length, alwl: input.allowedLevel.map(v => parseInt(v))
       }
       newService(data).then(result => {
         if (!result || result.errc > 0) {
