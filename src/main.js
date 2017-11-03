@@ -13,7 +13,8 @@ import config from '@/config.js'
 import App from './App'
 import store from './store/index.js'
 import routes from './routes/index.js'
-import { initAxios, initVDV, initRouter } from '@/utils.js'
+import { initAxios, initVDV, initRouter, registerPreventURLChange } from '@/utils.js'
+import LoadingBlock from './components/LoadingBlock.vue'
 //
 Vue.config.productionTip = config.isDevelopment
 Vue.config.debug = config.isDevelopment
@@ -29,6 +30,12 @@ initVDV(VueDataValidator, store, Vue)
 
 // router
 const router = initRouter(Router, Vue, store, config, routes)
+
+//
+registerPreventURLChange(Vue, router)
+
+//
+Vue.component('LoadingBlock', LoadingBlock)
 
 // start
 /* eslint-disable no-new */

@@ -549,8 +549,9 @@ export default {
 .data2-table-footer{
   background-color: #8a8a8a;
   color: #fff;
-  padding: 5px;
-  margin: 10px 0;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 5px;
   display: flex;
   justify-content: space-between;
   span{

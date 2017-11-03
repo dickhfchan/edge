@@ -257,3 +257,52 @@ export function newService(func) {
     dt.connect()
   })
 }
+
+export function newService2(data) {
+  return newService(data).then(result => {
+    if (!result || result.errc > 0) {
+      Vue.alert((result && result.errt) || `Save failed: ${JSON.stringify(result)}`)
+      console.log(result)
+      return Promise.reject(result)
+    } else {
+      return Promise.resolve(result)
+    }
+  })
+}
+
+export function registerPreventURLChange(Vue, router) {
+  let preventRouter = false
+  const msg0 = `It looks like you have been editing something.
+If you leave before saving, your changes will be lost.`
+  let msg
+  router.beforeEach((to, from, next) => {
+    if (preventRouter) {
+      if (window.confirm(msg || msg0)) {
+        Vue.allowURLChange()
+        next()
+      } else {
+        next(false)
+      }
+    } else {
+      next()
+    }
+  })
+  const beforeunload = (e) => {
+    var confirmationMessage = msg || msg0
+    e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
+    return confirmationMessage;              // Gecko, WebKit, Chrome <34
+  }
+  Vue.preventURLChange = Vue.prototype.$preventURLChange = (msg2) => {
+    if (msg2 != null) {
+      msg = msg2
+    }
+    if (!preventRouter) {
+      preventRouter = true
+      window.addEventListener("beforeunload", beforeunload)
+    }
+  }
+  Vue.allowURLChange = Vue.prototype.$allowURLChange = () => {
+    preventRouter = false
+    window.removeEventListener("beforeunload", beforeunload)
+  }
+}

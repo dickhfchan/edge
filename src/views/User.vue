@@ -227,7 +227,7 @@ export default {
       })
     },
     remove(row, i) {
-      this.$confirm('Are you sure to remove the use?').then(() => {
+      this.$confirm('Are you sure to remove the user?').then(() => {
         row.removing = true
         newService({func: 7, name: row.name}).then(() => {
           row.removing = false

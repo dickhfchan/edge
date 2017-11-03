@@ -17,11 +17,23 @@
     <slot name="tbody">
       <tbody>
         <tr v-for="(row, index) in items">
+
           <td v-for="col in headers" :key="col.value" :class="col.align==='right'?'text-xs-right':'text-xs-left'">
-            {{row[col.value]}}
+            <span v-if="!col.type">{{row[col.value]}}</span>
+            <input v-else-if="col.type === 'default'" v-model="row[col.value]" />
+            <input v-else-if="col.type === 'number'" type="number" v-model="row[col.value]" />
+            <div v-else-if="col.type==='select'" class="select-cell">
+              <select v-model="row[col.value]">
+                <option v-for="option in col.options" :value="option.value">
+                  {{option.text}}
+                </option>
+              </select>
+              <v-icon>arrow_drop_down</v-icon>
+            </div>
           </td>
           <td v-if="actionsVisible">
-            <v-btn flat danger @click.native="$emit('remove', {row, index})">Remove</v-btn>
+            <v-btn v-if="editBtnVisible" primary small @click.native="$emit('edit', {row, index})">Edit</v-btn>
+            <v-btn v-if="removeBtnVisible" error small @click.native="$emit('remove', {row, index})">Remove</v-btn>
           </td>
         </tr>
       </tbody>
@@ -36,7 +48,9 @@ export default {
   props: {
     headers: {},
     items: {},
-    actionsVisible: {default: true}
+    actionsVisible: {default: true},
+    editBtnVisible: {default: true},
+    removeBtnVisible: {default: true},
   },
   data() {
     return {
@@ -91,4 +105,11 @@ export default {
 }
 </script>
 <style lang="scss">
+.datatable{
+  .select-cell{
+    select{
+
+    }
+  }
+}
 </style>
