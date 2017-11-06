@@ -65,14 +65,14 @@
           </template>
         </v-data-table>
       </div>
-      <div class="ml-4" v-if="object1&&object1.objaddr==='temp'" style="width:700px;">
+      <div class="ml-4" v-if="object1&&object1.objaddr==='temp'">
         <div class="temperature-chart-labels">
           <div class="temperature-chart-label" v-for="item in temperatureChartLabels">
             <div class="block" :style="{backgroundColor: item.color}"></div>
             <span class="text">{{item.text}}</span>
           </div>
         </div>
-        <canvas class="temperature-chart"></canvas>
+        <canvas class="temperature-chart" style="width:1000px; height:400px;"></canvas>
       </div>
     </v-flex>
 
