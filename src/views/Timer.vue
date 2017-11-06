@@ -114,7 +114,7 @@ export default {
     },
     // max no
     maxId() {
-      let max = 0
+      let max = -1
       this.channel.rows.forEach(row => {
         if (row.rnum > max) {
           max = row.rnum
@@ -164,8 +164,13 @@ export default {
       this.$preventURLChange()
     },
     newItem() {
+      const id = this.maxId + 1
+      if (id > 50) {
+        this.$alert('Sorry, maximum number of records reached')
+        return
+      }
       const row = {
-        rnum: this.maxId + 1,
+        rnum: id,
         cday: 'Mon',
         timeOnText: '00:00',
         timeOffText: '00:00',
@@ -200,8 +205,12 @@ export default {
       }
       newService2(data).then(done, done)
     },
-    remove(row, i) {
-      this.channel.rows.splice(i, 1)
+    remove(row, index) {
+      for (let i = index + 1; i < this.channel.rows.length; i++) {
+        const row = this.channel.rows[i]
+        row.rnum--
+      }
+      this.channel.rows.splice(index, 1)
       this.onChanged()
     },
   },
