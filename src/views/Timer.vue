@@ -63,7 +63,7 @@ const dayMapping = {
   'Sat-Sun': 'Saturday - Sunday',
 }
 
-const sencondsFormat = (seconds) => {
+const secondsFormat = (seconds) => {
   const m0 = seconds / 60
   const h = Math.floor(m0 / 60)
   const m = Math.floor(m0 % 60)
@@ -140,8 +140,14 @@ export default {
           channel.description = channel.desc
           channel.state = channel.stat
           channel.rows.forEach(row => {
-            row.timeOnText = sencondsFormat(row.tion)
-            row.timeOffText = sencondsFormat(row.tiof)
+            if (row.tion === -1) {
+              row.tion = 0
+            }
+            if (row.tiof === -1) {
+              row.tiof = 0
+            }
+            row.timeOnText = secondsFormat(row.tion)
+            row.timeOffText = secondsFormat(row.tiof)
           })
         })
         this.originalData = data
@@ -184,20 +190,36 @@ export default {
         return
       }
       this.saving = true
+      let inValidObj = null
       const data = {func: 12, chns: this.originalData.channels.map(cn => {
         return {
           chnl: cn.cnum,
           nrow: cn.rows.length,
           rows: cn.rows.map(row => {
-            return {
+            const t = {
               rnum: row.rnum,
               cday: row.cday,
               tion: timeToSeconds(row.timeOnText),
               tiof: timeToSeconds(row.timeOffText),
             }
+            if (!inValidObj && (t.tion > 0 || t.tiof > 0) && t.tion >= t.tiof) {
+              inValidObj = {
+                cnum: cn.cnum,
+                rnum: row.rnum
+              }
+            }
+            return t
           })
         }
       })}
+
+      // validate
+      if (inValidObj) {
+        this.$alert(`Time off must be bigger than time on at channel ${inValidObj.cnum + 1} row ${inValidObj.rnum}`)
+        this.saving = false
+        return
+      }
+
       const done = (result) => {
         this.saving = false
         this.changed = false
