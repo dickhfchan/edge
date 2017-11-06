@@ -9,7 +9,7 @@
     <router-view v-if="$route.name==='login'"></router-view>
     <template v-else-if="$store.state.authenticated">
       <!-- left sidebar -->
-      <Sidebar v-model="drawer"></Sidebar>
+      <Sidebar v-model="drawer" :menu="state.menu"></Sidebar>
 
       <!-- right sidebar -->
       <v-navigation-drawer

@@ -171,7 +171,6 @@ export default {
         password: '',
         confirmPassword: '',
         defaultLevel: null,
-        noOfAllowedLevel: null,
         allowedLevel: [],
       }
     },
@@ -185,7 +184,7 @@ export default {
           password: '',
           confirmPassword: '',
           defaultLevel: data.defl.toString(),
-          noOfAllowedLevel: data.nalw.toString(),
+          // noOfAllowedLevel: data.nalw.toString(),
           allowedLevel: data.alwl.map(v => v.toString()),
         }
       })

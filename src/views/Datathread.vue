@@ -65,7 +65,7 @@
           </template>
         </v-data-table>
       </div>
-      <div class="ml-4" v-if="object1&&object1.objaddr==='temp'" style="width:1000px;">
+      <div class="ml-4" v-if="object1&&object1.objaddr==='temp'" style="width:700px;">
         <div class="temperature-chart-labels">
           <div class="temperature-chart-label" v-for="item in temperatureChartLabels">
             <div class="block" :style="{backgroundColor: item.color}"></div>

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 // import config from '../config.js'
 import urls from './modules/urls.js'
+import menu from './menu'
 // import createLogger from '@/../node_modules/vuex/src/plugins/logger.js'
 import DataSource from '../DataSource.js'
 
@@ -16,6 +17,7 @@ const store = new Vuex.Store({
     user: null,
     authenticated: false,
     builtAt: window.builtAt,
+    menu,
     brand: 'Edge',
     loginSubtitle: 'Sign in to start your session',
     rules: {
