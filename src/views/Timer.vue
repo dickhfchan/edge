@@ -49,7 +49,6 @@
 </template>
 <script>
 import Datatable from '../components/Datatable.vue'
-import {newService2} from '@/utils'
 
 const dayMapping = {
   Mon: 'Monday',
@@ -134,7 +133,7 @@ export default {
   },
   methods: {
     getData() {
-      newService2({func: 11}).then(data => {
+      this.$newService({func: 11}).then(data => {
         data.channels = data.chnl
         data.channels.forEach(channel => {
           channel.description = channel.desc
@@ -152,6 +151,7 @@ export default {
         })
         this.originalData = data
         this.loading = false
+        console.log('90');
         // watch
         data.channels.forEach(cn => {
           cn.rows.forEach(row => {
@@ -225,7 +225,7 @@ export default {
         this.changed = false
         this.$allowURLChange()
       }
-      newService2(data).then(done, done)
+      this.$newService(data).then(done, done)
     },
     remove(row, index) {
       for (let i = index + 1; i < this.channel.rows.length; i++) {

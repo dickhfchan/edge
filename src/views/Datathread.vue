@@ -104,7 +104,7 @@ import {format} from 'date-functions'
 import DataSource from '@/DataSource'
 import Chart from 'chart.js'
 import TwoEndSlider from '@/components/TwoEndSlider.vue'
-import { newService } from '@/utils'
+
 
 export default {
   components: {TwoEndSlider},
@@ -507,7 +507,7 @@ export default {
         }
         const decimal = item.field.original.flddecim
         value = Math.floor(value * Math.pow(10, decimal))
-        newService({func: 25, objn: this.object1.objaddr, item: parseInt(this.item1.text), fldn: item.field.name, valn: value}).then(result => {
+        this.$newService({func: 25, objn: this.object1.objaddr, item: parseInt(this.item1.text), fldn: item.field.name, valn: value}).then(result => {
           if (!result || result.errc > 0) {
             this.$alert((result && result.errt) || `Save failed: ${JSON.stringify(result)}`)
           }
@@ -516,7 +516,7 @@ export default {
     },
     clickData2Row(row) {
       console.log('data2 row clicked, start send message to backend');
-      newService({func: 8, wdix: row.WordIX, btix: row.BitIX, actn: "acknowledge"}).then(data => {
+      this.$newService({func: 8, wdix: row.WordIX, btix: row.BitIX, actn: "acknowledge"}).then(data => {
         console.log('send message to backend successfully');
       }, () => {
         console.warn('send message to backend failed');

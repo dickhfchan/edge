@@ -39,7 +39,7 @@
 <script>
 import DataSource from '@/DataSource'
 import Datatable from '../components/Datatable.vue'
-import { newService } from '@/utils.js'
+
 
 export default {
   components: { Datatable },
@@ -128,7 +128,7 @@ export default {
         data.rows.push(row2)
       })
       this.saving = true
-      newService(data).then(r => {
+      this.$newService(data).then(r => {
         if (r.errc > 0) {
           this.$alert(r.errt || 'Save failed')
           console.log(r)

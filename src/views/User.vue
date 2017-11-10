@@ -102,7 +102,7 @@
 <script>
 import DataSource from '@/DataSource'
 import Datatable from '../components/Datatable.vue'
-import { newService } from '@/utils.js'
+
 
 export default {
   components: { Datatable },
@@ -156,7 +156,7 @@ export default {
   },
   methods: {
     getData() {
-      newService({func: 4}).then(data => {
+      this.$newService({func: 4}).then(data => {
         this.rows = data.user.map(name => {
           return {name, removing: false}
         })
@@ -175,7 +175,7 @@ export default {
       }
     },
     edit(row, i) {
-      newService({func: 5, name: row.name}).then(data => {
+      this.$newService({func: 5, name: row.name}).then(data => {
         this.userForm.mode = 'edit'
         this.userForm.visible = true
         this.userForm.data = {
@@ -214,7 +214,7 @@ export default {
       const data = {func: 6, cusr: mode === 'add' ? 1 : 0, name:input.name, pass: input.password, tout: parseInt(input.timeout),
         defl: parseInt(input.defaultLevel), nalw: input.allowedLevel.length, alwl: input.allowedLevel.map(v => parseInt(v))
       }
-      newService(data).then(result => {
+      this.$newService(data).then(result => {
         if (!result || result.errc > 0) {
           this.$alert((result && result.errt) || `Save failed: ${JSON.stringify(result)}`)
           console.log(result)
@@ -228,7 +228,7 @@ export default {
     remove(row, i) {
       this.$confirm('Are you sure to remove the user?').then(() => {
         row.removing = true
-        newService({func: 7, name: row.name}).then(() => {
+        this.$newService({func: 7, name: row.name}).then(() => {
           row.removing = false
           this.rows.splice(i, 1)
         })

@@ -54,6 +54,14 @@ export default class DataSource {
             this.ongetdata && this.ongetdata(data)
           }
           break
+        case 'historicaldata':
+          if (i === 0) {
+            var txt1 = JSON.stringify(this.func)
+            this.send(txt1)
+          } else if (i >= 1) {
+            this.ongetdata && this.ongetdata(data)
+          }
+          break
       }
       i++
     })

@@ -177,7 +177,7 @@
 <script>
 import Datatable from '../components/ProgramDatatable.vue'
 import Datatable2 from '../components/Datatable.vue'
-import { newService } from '@/utils'
+
 
 export default {
   components: {Datatable, Datatable2},
@@ -237,7 +237,7 @@ export default {
   watch: {
     subr() {
       if (this.subr) {
-        newService({func: 19, subr: this.subr}).then(data => {
+        this.$newService({func: 19, subr: this.subr}).then(data => {
           this.rows = data.rows
         })
       } else {
@@ -283,7 +283,7 @@ export default {
       }
     },
     getData() {
-      return newService({func: 18}).then(data => {
+      return this.$newService({func: 18}).then(data => {
         this.programs = data.rows
       })
     },
@@ -296,7 +296,7 @@ export default {
       const subr = (Math.max(...this.programs.map(v => v.subr)) || 0) + 1
       const data = {func: 20, csub: 1, subr, name, nrow: 0, rows: []}
       this.saving = true
-      newService(data).then(r => {
+      this.$newService(data).then(r => {
         if (this.isServiceSuccessful(r, 'Save failed')) {
           this.programs.push({name, subr})
           this.newProgram.visible = false
@@ -384,7 +384,7 @@ export default {
       })
       const data = {func: 20, csub: 0, subr: this.program.subr, name: this.program.name, nrow: this.rows.length, rows: this.getDataRows()}
       this.saving = true
-      newService(data).then(r => {
+      this.$newService(data).then(r => {
         this.isServiceSuccessful(r, 'Save failed')
         this.saving = false
       })
@@ -396,7 +396,7 @@ export default {
       this.$confirm('Are you sure to remove the program?').then(() => {
         const data = {func: 21, subr: this.program.subr}
         this.removing = true
-        newService(data).then(r => {
+        this.$newService(data).then(r => {
           if (this.isServiceSuccessful(r, 'Remove failed')) {
             this.subr = null
             this.getData().then(() => {
@@ -415,7 +415,7 @@ export default {
       // }
       const data = {func: 22, nrow: this.rows.length, rows: this.getDataRows()}
       this.compiling = true
-      newService(data).then(r => {
+      this.$newService(data).then(r => {
         this.isServiceSuccessful(r, 'Compile failed')
         this.compiling = false
       })
@@ -470,7 +470,7 @@ export default {
       }
       const data = {'func': 23, 'srhm': this.searchMode.toLowerCase(), 'upca': this.searchMULC ? '1' : '0', 'wwrd': this.searchMWW ? '1' : '0', 'srhs': this.searchText || ''}
       this.searching = true
-      newService(data).then(r => {
+      this.$newService(data).then(r => {
         if (this.isServiceSuccessful(r, 'Search failed')) {
           this.addProgramNameToRows(r.rows)
           this.rows2 = r.rows

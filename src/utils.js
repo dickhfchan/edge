@@ -241,35 +241,6 @@ export function namedHttpGet(name, url, options0) {
   return http.get(url, options)
 }
 
-export function newService(func) {
-  console.log('new services connect, func is follow')
-  console.log(func)
-  const dt = new DataSource()
-  dt.type = 'services'
-  dt.func = func
-  return new Promise(function(resolve, reject) {
-    dt.ongetdata = data => {
-      console.log('data is follow')
-      console.log(data)
-      resolve(data)
-      dt.close()
-    }
-    dt.connect()
-  })
-}
-
-export function newService2(data) {
-  return newService(data).then(result => {
-    if (!result || result.errc > 0) {
-      Vue.alert((result && result.errt) || `Save failed: ${JSON.stringify(result)}`)
-      console.log(result)
-      return Promise.reject(result)
-    } else {
-      return Promise.resolve(result)
-    }
-  })
-}
-
 export function registerPreventURLChange(Vue, router) {
   let preventRouter = false
   const msg0 = `It looks like you have been editing something.
