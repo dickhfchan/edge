@@ -21,7 +21,7 @@
       </div>
       <div style="width:250px;" class="flex-col" v-if="channel">
         <span class="state-label">State</span>
-        <v-switch class="pa-0" :value="channel.state==='on'"></v-switch>
+        <v-switch class="pa-0" v-model="channelState"></v-switch>
       </div>
     </v-flex>
 
@@ -121,6 +121,12 @@ export default {
       })
       return max
     },
+    channelState: {
+      get() {
+        return this.channel.state==='on'
+      },
+      set() {},
+    }
   },
   created() {
     this.getData()
@@ -133,11 +139,12 @@ export default {
   },
   methods: {
     getData() {
-      this.$newService({func: 11}).then(data => {
+      Promise.all([this.$newService({func: 11}), this.$newService({func: 13})]).then(([data, data2]) => {
         data.channels = data.chnl
-        data.channels.forEach(channel => {
+        data.channels.forEach((channel, index) => {
           channel.description = channel.desc
-          channel.state = channel.stat
+          // right channel 'stat' is in data2
+          channel.state = data2.chnl[index].stat
           channel.rows.forEach(row => {
             if (row.tion === -1) {
               row.tion = 0
@@ -151,7 +158,6 @@ export default {
         })
         this.originalData = data
         this.loading = false
-        console.log('90');
         // watch
         data.channels.forEach(cn => {
           cn.rows.forEach(row => {

@@ -86,6 +86,7 @@ Vue.mixin({
         callback(data)
       }
       dt.connect()
+      return dt
     }
   },
   beforeDestroy() {

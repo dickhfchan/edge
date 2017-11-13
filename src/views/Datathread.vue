@@ -72,7 +72,7 @@
             <span class="text">{{item.text}}</span>
           </div>
         </div>
-        <canvas class="temperature-chart" style="width:1000px; height:400px;"></canvas>
+        <canvas class="temperature-chart" style="width:1400px; height:400px;"></canvas>
       </div>
     </v-flex>
 

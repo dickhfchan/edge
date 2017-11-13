@@ -1,0 +1,23 @@
+
+.text-field-1{
+  display: inline-block;
+  width: auto;
+  padding: 0;
+  vertical-align: middle;
+  .input-group__details{
+    padding: 0;
+    min-height: 0;
+    height: 1px;
+    overflow: hidden;
+  }
+}
+.date-picker-1{
+  .datepickbox{
+    input{
+      height: 30px;
+      border-bottom: 1px solid rgba(0,0,0,.54);
+      padding: 0;
+      font-size: 14px;
+    }
+  }
+}

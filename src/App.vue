@@ -108,7 +108,6 @@
 </template>
 
 <script>
-import {newService} from '@/utils.js'
 import Prompt from '@/components/Prompt'
 import Sidebar from '@/components/Sidebar.vue'
 
@@ -169,7 +168,7 @@ export default {
         this.$alert('The password confirmation does not match')
         return
       }
-      newService({func: 3, name: this.$store.state.user.username, pass: oldPassword, npwd: newPassword}).then(r => {
+      this.$newService({func: 3, name: this.$store.state.user.username, pass: oldPassword, npwd: newPassword}).then(r => {
         console.log(r)
         if (r.err > 0) {
           this.$alert('The change password operation failed')
@@ -239,6 +238,7 @@ export default {
 @import "../node_modules/vuetify/dist/vuetify.min.css";
 @import "./assets/css/layer.scss";
 @import "./assets/css/helper.scss";
+@import "./assets/css/style.scss";
 // font
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
 body{
