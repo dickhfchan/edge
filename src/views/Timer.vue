@@ -97,14 +97,6 @@ export default {
         {text: 'Time off', value: 'timeOffText', align: 'left', sortAble: false, type: 'default'},
       ],
       saving: false,
-      form: {
-        mode: null,
-        visible: false,
-        data: {},
-      },
-      rules: {
-        required: (value) => !!value || 'Required',
-      },
     }
   },
   computed: {

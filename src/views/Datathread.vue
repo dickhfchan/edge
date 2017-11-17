@@ -54,7 +54,7 @@
             hide-actions
             class="data1-list"
           >
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td class="">{{props.item.text}}</td>
             <td class="text-xs-right relative">
               {{ props.item.value }}
@@ -84,7 +84,7 @@
           hide-actions
           class="elevation-1"
         >
-          <template slot="items" scope="props">
+          <template slot="items" slot-scope="props">
             <td v-for="(header, i) in headers2" :class="{'text-xs-right': i > 0}" @click="clickData2Row(props.item)">
               {{ props.item[header.value] }}
             </td>

@@ -44,7 +44,6 @@
 </template>
 
 <script>
-import {newHistoricalData} from '@/utils.js'
 import {format} from 'date-functions'
 import datepicker from 'vue-datepicker/vue-datepicker-es6'
 import Datatable from '../components/Datatable.vue'
@@ -53,6 +52,7 @@ export default {
   components: {Datatable, datepicker},
   data() {
     return {
+      title: 'Alarm Log',
       headers: [
         // {text: 'Alarm ID', value: 'alid', align: 'left', sortAble: false},
         // {text: 'Alarm number', value: 'anum', align: 'left', sortAble: false},
@@ -117,6 +117,11 @@ export default {
     },
   },
   created() {
+  },
+  mounted() {
+    this.$nextTick(() => {
+      document.title = this.title
+    })
   },
 }
 // format: 2017-11-24 00:56
