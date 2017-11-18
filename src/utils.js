@@ -1,4 +1,4 @@
-import { titleCase } from 'helper-js'
+import { titleCase, studlyCase } from 'helper-js'
 import Vue from 'vue'
 import DataSource from './DataSource.js'
 
@@ -275,5 +275,138 @@ If you leave before saving, your changes will be lost.`
   Vue.allowURLChange = Vue.prototype.$allowURLChange = () => {
     preventRouter = false
     window.removeEventListener("beforeunload", beforeunload)
+  }
+}
+export function secondsFormat (seconds) {
+  const m0 = seconds / 60
+  const h = Math.floor(m0 / 60)
+  const m = Math.floor(m0 % 60)
+  const hh = h < 10 ? `0${h}` : h.toString()
+  const mm = m < 10 ? `0${m}` : m.toString()
+  return `${hh}:${mm}`
+}
+
+export function timeToSeconds (time) {
+  const [h, m] = time.split(':')
+  return h * 3600 + m * 60
+}
+
+export const numDayMapping = {
+  1: 'Monday',
+  2: 'Tuesday',
+  3: 'Wednesday',
+  4: 'Thursday',
+  5: 'Friday',
+  6: 'Saturday',
+  7: 'Sunday',
+}
+
+export function numToDay(num) {
+  return numDayMapping[num.toString()]
+}
+
+export function dayToNum(day) {
+  for (const key in numDayMapping) {
+    if (numDayMapping[key] === day) {
+      return key
+    }
+  }
+}
+
+export function cloneObjByKeys(obj, keys) {
+  const r = {}
+  for (const key of keys) {
+    r[key] = obj[key]
+  }
+  return r
+}
+
+export const monthDetails = {
+  "Jan": {
+    "name": "January",
+    "short": "Jan",
+    "number": 1,
+    "days": 31
+  },
+  "Feb": {
+    "name": "February",
+    "short": "Feb",
+    "number": 2,
+    "days": 28
+  },
+  "Mar": {
+    "name": "March",
+    "short": "Mar",
+    "number": 3,
+    "days": 31
+  },
+  "Apr": {
+    "name": "April",
+    "short": "Apr",
+    "number": 4,
+    "days": 30
+  },
+  "May": {
+    "name": "May",
+    "short": "May",
+    "number": 5,
+    "days": 31
+  },
+  "Jun": {
+    "name": "June",
+    "short": "Jun",
+    "number": 6,
+    "days": 30
+  },
+  "Jul": {
+    "name": "July",
+    "short": "Jul",
+    "number": 7,
+    "days": 31
+  },
+  "Aug": {
+    "name": "August",
+    "short": "Aug",
+    "number": 8,
+    "days": 31
+  },
+  "Sep": {
+    "name": "September",
+    "short": "Sep",
+    "number": 9,
+    "days": 30
+  },
+  "Oct": {
+    "name": "October",
+    "short": "Oct",
+    "number": 10,
+    "days": 31
+  },
+  "Nov": {
+    "name": "November",
+    "short": "Nov",
+    "number": 11,
+    "days": 30
+  },
+  "Dec": {
+    "name": "December",
+    "short": "Dec",
+    "number": 12,
+    "days": 31
+  }
+}
+
+export function numToMon(num) {
+  return Object.values(monthDetails)[num - 1].name
+}
+
+export function monToNum(name) {
+  const reg = new RegExp(name, 'i')
+  let i = 0
+  for (const item of Object.values(monthDetails)) {
+    if (item.name.search(reg) === 0) {
+      return i + 1
+    }
+    i++
   }
 }

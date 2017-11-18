@@ -49,6 +49,7 @@
 </template>
 <script>
 import Datatable from '../components/Datatable.vue'
+import {secondsFormat, timeToSeconds} from '@/utils'
 
 const dayMapping = {
   Mon: 'Monday',
@@ -60,20 +61,6 @@ const dayMapping = {
   Sun: 'Sunday',
   'Mon-Fri': 'Monday - Friday',
   'Sat-Sun': 'Saturday - Sunday',
-}
-
-const secondsFormat = (seconds) => {
-  const m0 = seconds / 60
-  const h = Math.floor(m0 / 60)
-  const m = Math.floor(m0 % 60)
-  const hh = h < 10 ? `0${h}` : h.toString()
-  const mm = m < 10 ? `0${m}` : m.toString()
-  return `${hh}:${mm}`
-}
-
-const timeToSeconds = (time) => {
-  const [h, m] = time.split(':')
-  return h * 3600 + m * 60
 }
 
 export default {
@@ -222,6 +209,9 @@ export default {
         this.saving = false
         this.changed = false
         this.$allowURLChange()
+        if (result && result.name === 'Error') {
+          throw result
+        }
       }
       this.$newService(data).then(done, done)
     },
