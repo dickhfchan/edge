@@ -410,3 +410,15 @@ export function monToNum(name) {
     i++
   }
 }
+
+export function compareNumberArray(a1, a2) {
+  const len = a1.length > a2.length ? a1.length : a2.length
+  for (let i = 0; i < len; i++) {
+    const n1 = a1[i] || 0
+    const n2 = a2[i] || 0
+    if (n1 !== n2) {
+      return n1 - n2
+    }
+  }
+  return 0
+}

@@ -130,7 +130,7 @@
 
 <script>
 import Datatable from '../components/Datatable.vue'
-import {secondsFormat, timeToSeconds, cloneObjByKeys, monthDetails, numToMon, monToNum} from '@/utils'
+import {secondsFormat, timeToSeconds, cloneObjByKeys, monthDetails, numToMon, monToNum, compareNumberArray} from '@/utils'
 
 export default {
   components: {Datatable},
@@ -249,6 +249,12 @@ export default {
     saveFormDialog() {
       const {formDialog} = this
       const data = this.getRowData(formDialog.data)
+      data.frti = timeToSeconds(`${data.frhr}:${data.frmi}`)
+      data.toti = timeToSeconds(`${data.tohr}:${data.tomi}`)
+      if (compareNumberArray([data.frmo, data.frda, data.frti], [data.tomo, data.toda, data.toti]) >= 0) {
+        this.$alert(`To time must be bigger than from time`)
+        return
+      }
       let row
       if (formDialog.mode === 'add') {
         row = {}
@@ -261,8 +267,6 @@ export default {
         row = formDialog.row
         Object.assign(row, formDialog.data)
       }
-      row.frti = timeToSeconds(`${row.frhr}:${row.frmi}`)
-      row.toti = timeToSeconds(`${row.tohr}:${row.tomi}`)
       this.correctRow(row)
       formDialog.visible = false
       this.onChanged()
@@ -272,22 +276,21 @@ export default {
         return
       }
       this.saving = true
-      const rows = this.rows.map(row => {
-        const data = this.getRowData(row)
-        data.stat = row.stat === 'on' ? 1 : 0
-        return data
-      })
-      const data = {func: 15, istp: 0, nrow: this.rows.length, rows}
 
-      const done = (result) => {
+      const data = {func: 15, istp: 0, nrow: this.rows.length, rows: this.rows.map(row => {
+        const rowData = this.getRowData(row)
+        rowData.stat = row.stat === 'on' ? 1 : 0
+        return rowData
+      })}
+
+      this.$newService(data).then(() => {
         this.saving = false
         this.changed = false
         this.$allowURLChange()
-        if (result && result.name === 'Error') {
-          throw result
-        }
-      }
-      this.$newService(data).then(done, done)
+      }, e => {
+        this.saving = false
+        throw e
+      })
     },
   },
   created() {

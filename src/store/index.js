@@ -18,7 +18,7 @@ const store = new Vuex.Store({
     authenticated: false,
     builtAt: window.builtAt,
     menu,
-    brand: 'Edge',
+    brand: 'Neuron',
     loginSubtitle: 'Sign in to start your session',
     rules: {
       required: value => (value == null || value === '') ? 'Required' : true,

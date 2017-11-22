@@ -205,15 +205,14 @@ export default {
         return
       }
 
-      const done = (result) => {
+      this.$newService(data).then(() => {
         this.saving = false
         this.changed = false
         this.$allowURLChange()
-        if (result && result.name === 'Error') {
-          throw result
-        }
-      }
-      this.$newService(data).then(done, done)
+      }, e => {
+        this.saving = false
+        throw e
+      })
     },
     remove(row, index) {
       for (let i = index + 1; i < this.channel.rows.length; i++) {

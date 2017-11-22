@@ -61,7 +61,7 @@ export default {
         // {text: 'Date export', value: 'dexp', align: 'left', sortAble: false},
         {text: 'Category', value: 'cate', align: 'left', sortAble: false},
         {text: 'Status', value: 'stat', align: 'left', sortAble: false},
-        {text: 'Alarm text', value: 'text', align: 'left', sortAble: false, type: 'default'},
+        {text: 'Alarm text', value: 'text', align: 'left', sortAble: false},
       ],
       rows: null,
       // search
