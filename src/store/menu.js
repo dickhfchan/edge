@@ -6,7 +6,7 @@ export default [
   {text: 'Timer Exceptions', route: {name: 'timerExceptions'}},
   { text: 'Reports', children: [
     {text: 'Alarm Log', route: {name: 'alarmLog'}},
-    {text: 'Thrends', route: {name: 'thrends'}},
+    {text: 'Trends', route: {name: 'trends'}},
 
   ]},
   { text: 'User', route: {name: 'user'}, isAllowed: (store) => store.state.user.name === 'root' },

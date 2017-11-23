@@ -5,7 +5,7 @@ export default [
   { path: '/program', name: 'program', component: resolve => require(['../views/Program.vue'], resolve) },
   { path: '/timer', name: 'timer', component: resolve => require(['../views/Timer.vue'], resolve) },
   { path: '/alarmLog', name: 'alarmLog', component: resolve => require(['../views/AlarmLog.vue'], resolve) },
-  { path: '/thrends', name: 'thrends', component: resolve => require(['../views/Thrends.vue'], resolve) },
+  { path: '/trends', name: 'trends', component: resolve => require(['../views/Trends.vue'], resolve) },
   { path: '/timerExceptions', name: 'timerExceptions', component: resolve => require(['../views/TimerExceptions.vue'], resolve) },
   { path: '/user', name: 'user', component: resolve => require(['../views/User.vue'], resolve) },
   //
