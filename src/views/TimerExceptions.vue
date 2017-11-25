@@ -248,10 +248,10 @@ export default {
     },
     saveFormDialog() {
       const {formDialog} = this
-      const data = this.getRowData(formDialog.data)
-      data.frti = timeToSeconds(`${data.frhr}:${data.frmi}`)
-      data.toti = timeToSeconds(`${data.tohr}:${data.tomi}`)
-      if (compareNumberArray([data.frmo, data.frda, data.frti], [data.tomo, data.toda, data.toti]) >= 0) {
+      const d1 = formDialog.data
+      d1.frti = timeToSeconds(`${d1.frhr}:${d1.frmi}`)
+      d1.toti = timeToSeconds(`${d1.tohr}:${d1.tomi}`)
+      if (compareNumberArray([d1.frmo, d1.frda, d1.frti], [d1.tomo, d1.toda, d1.toti]) >= 0) {
         this.$alert(`To time must be bigger than from time`)
         return
       }
@@ -259,10 +259,7 @@ export default {
       if (formDialog.mode === 'add') {
         row = {}
         Object.assign(row, formDialog.data)
-        row.frti = null
-        row.toti = null
         this.rows.push(row)
-        console.log(row);
       } else {
         row = formDialog.row
         Object.assign(row, formDialog.data)
