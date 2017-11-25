@@ -190,7 +190,14 @@ export default {
   created() {
     // init
     const t = window.localStorage.getItem('user')
-    const user = t && JSON.parse(t)
+    let user = t && JSON.parse(t)
+    if (!user.expired_at || user.expired_at <= new Date().getTime()) {
+      user = null
+    } else {
+      setInterval(() => {
+        this.$store.dispatch('autoExtendUserRememberTime')
+      }, 1 * 3600 * 1000);
+    }
     const goLoginPage = () => {
       if (this.$route.name !== 'login') {
         this.$router.push({name: 'login'})

@@ -27,6 +27,7 @@
   </div>
 </template>
 <script>
+import {addHours} from 'date-functions'
 export default {
   // components:
   data() {
@@ -46,6 +47,7 @@ export default {
           const userStore = {
             username,
             password,
+            expired_at: addHours(new Date(), this.$store.state.userRemember).getTime(),
           }
           window.localStorage.setItem('user', JSON.stringify(userStore))
           this.$router.push({name: 'datathread'})

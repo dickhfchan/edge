@@ -5,6 +5,7 @@ import urls from './modules/urls.js'
 import menu from './menu'
 // import createLogger from '@/../node_modules/vuex/src/plugins/logger.js'
 import DataSource from '../DataSource.js'
+import {addHours} from 'date-functions'
 
 Vue.use(Vuex)
 
@@ -34,6 +35,7 @@ const store = new Vuex.Store({
       '7': ' MANAGER',
       '-1': ' ALL'
     },
+    userRemember: 8, // hours
   },
   mutations: {
     initialized(state, val) { state.initialized = val },
@@ -61,6 +63,14 @@ const store = new Vuex.Store({
         }
         dt.connect()
       })
+    },
+    autoExtendUserRememberTime({state}) {
+      const obj = JSON.parse(window.localStorage.getItem('user'))
+      const t = state.userRemember * 3600 * 1000
+      if (obj.expired_at - new Date().getTime() < t) {
+        obj.expired_at = addHours(new Date(), state.userRemember).getTime()
+        window.localStorage.setItem('user', JSON.stringify(obj))
+      }
     },
   },
   // strict: config.isDevelopment
