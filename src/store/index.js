@@ -36,6 +36,12 @@ const store = new Vuex.Store({
       '-1': ' ALL'
     },
     userRemember: 8, // hours
+    datepickerOption: {
+      type: 'min',
+      week: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
+      month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      format: 'YYYY-MM-DD HH:mm'
+    },
   },
   mutations: {
     initialized(state, val) { state.initialized = val },

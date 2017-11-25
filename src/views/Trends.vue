@@ -1,6 +1,20 @@
 <template>
-<v-layout row wrap class="ma-3 trends">
-  <v-flex xs12 class="">
+<v-layout row wrap class="ma-3 Trends">
+  <v-flex xs12 class="second-bar mb-3">
+    <div class="">
+      <label>Search From</label>
+      <datepicker class="date-picker-1" :date="startDate" :option="$store.state.datepickerOption"></datepicker>
+    </div>
+    <div class="">
+      <label>Search To</label>
+      <datepicker class="date-picker-1" :date="endDate" :option="$store.state.datepickerOption"></datepicker>
+    </div>
+    <div class="">
+      <v-btn primary dark @click="search">Search</v-btn>
+    </div>
+  </v-flex>
+
+  <v-flex xs12 class="" v-if="rows">
     <div class="">
       <canvas :id="chart1Id" class="chart1" style="width:1400px; height:400px;"></canvas>
     </div>
@@ -11,23 +25,45 @@
 <script>
 import {format} from 'date-functions'
 import {arrayLast} from 'helper-js'
-// import datepicker from 'vue-datepicker/vue-datepicker-es6'
+import datepicker from 'vue-datepicker/vue-datepicker-es6'
 import Chart from 'chart.js'
+import {resolveDate} from '@/utils'
 
 export default {
-  // components: {datepicker},
+  components: {datepicker},
   data() {
     return {
       title: 'Trends',
       chart1Id: `chart1_${this._uid}`,
-      rows: [],
+      rows: null,
+      // search
+      startDate: {
+        time: '',
+      },
+      endDate: {
+        time: '',
+      },
+      category: null,
+      pattern: null,
+      searching: false,
     }
   },
   methods: {
-    getData() {
+    search() {
+      if (this.searchDt) {
+        this.searchDt.close()
+        this.searchDt = null
+      }
+      this.rows = null
       let i = 0
-      this.$newHistoricalData({func: 24, objn: 'temp', item: 0, fend: 0, fryr: 2017, frmo: 10, frda: 24, frhr: 15, frmi: 16, toyr: 2017, tomo: 10, toda: 24, tohr: 15, tomi: 30}, (data) => {
+      const sdate = resolveDate(this.startDate.time)
+      const edate = resolveDate(this.endDate.time)
+      this.searchDt = this.$newHistoricalData({func: 24, objn: 'temp', item: 0, fend: 0,
+        fryr: sdate.year, frmo: sdate.month, frda: sdate.date, frhr: sdate.hour, frmi: sdate.minute,
+        toyr: edate.year, tomo: edate.month, toda: edate.date, tohr: edate.hour, tomi: edate.minute,
+      }, (data) => {
         if (i > 0) {
+          this.rows = []
           data.trds.forEach(item => {
             const row = {
               originalData: item,
@@ -108,13 +144,25 @@ export default {
     this.$nextTick(() => {
       document.title = this.title
     })
-    this.getData() // render Chart1 afeter mounted
   },
 }
 
 </script>
 
 <style lang="scss">
-.trends{
+.Trends{
+  .second-bar{
+    // justify-content:space-between;
+    align-items: baseline;
+    > div{
+      margin-right: 2em;
+    }
+    // .date-picker{
+    //   width: 150px;
+    // }
+    .input-group.input-group--text-field{
+      width: 150px;
+    }
+  }
 }
 </style>

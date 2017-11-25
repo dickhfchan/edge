@@ -422,3 +422,19 @@ export function compareNumberArray(a1, a2) {
   }
   return 0
 }
+
+// format: 2017-11-24 00:56
+export function resolveDate(date) {
+  date = date || ''
+  const r = {
+    year: date.substr(0, 4),
+    month: date.substr(5, 2),
+    date: date.substr(8, 2),
+    hour: date.substr(11, 2),
+    minute: date.substr(14, 2),
+  }
+  for (const key in r) {
+    r[key] = parseInt(r[key])
+  }
+  return r
+}

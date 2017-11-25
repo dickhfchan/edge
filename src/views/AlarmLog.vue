@@ -3,11 +3,11 @@
   <v-flex xs12 class="second-bar mb-3">
     <div class="">
       <label>Search From</label>
-      <datepicker class="date-picker-1" :date="startDate" :option="datepickerOption"></datepicker>
+      <datepicker class="date-picker-1" :date="startDate" :option="$store.state.datepickerOption"></datepicker>
     </div>
     <div class="">
       <label>Search To</label>
-      <datepicker class="date-picker-1" :date="endDate" :option="datepickerOption"></datepicker>
+      <datepicker class="date-picker-1" :date="endDate" :option="$store.state.datepickerOption"></datepicker>
     </div>
     <div class="">
       <label>Category</label>
@@ -47,6 +47,7 @@
 import {format} from 'date-functions'
 import datepicker from 'vue-datepicker/vue-datepicker-es6'
 import Datatable from '../components/Datatable.vue'
+import {resolveDate} from '@/utils'
 
 export default {
   components: {Datatable, datepicker},
@@ -70,12 +71,6 @@ export default {
       },
       endDate: {
         time: '',
-      },
-      datepickerOption: {
-        type: 'min',
-        week: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
-        month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-        format: 'YYYY-MM-DD HH:mm'
       },
       category: null,
       pattern: null,
@@ -124,21 +119,7 @@ export default {
     })
   },
 }
-// format: 2017-11-24 00:56
-function resolveDate(date) {
-  date = date || ''
-  const r = {
-    year: date.substr(0, 4),
-    month: date.substr(5, 2),
-    date: date.substr(8, 2),
-    hour: date.substr(11, 2),
-    minute: date.substr(14, 2),
-  }
-  for (const key in r) {
-    r[key] = parseInt(r[key])
-  }
-  return r
-}
+
 </script>
 
 <style lang="scss">
