@@ -130,7 +130,8 @@
 
 <script>
 import Datatable from '../components/Datatable.vue'
-import {secondsFormat, timeToSeconds, cloneObjByKeys, monthDetails, numToMon, monToNum, compareNumberArray} from '@/utils'
+import {minutesFormat, timeToMinutes, cloneObjByKeys, monthDetails, numToMon, monToNum, compareNumberArray} from '@/utils'
+import {isNumeric} from 'helper-js'
 
 export default {
   components: {Datatable},
@@ -177,12 +178,18 @@ export default {
       const {channelMappping} = this
       this.$set(row, 'chnlText', channelMappping[row.chnl].name)
       this.$set(row, 'frmoText', numToMon(row.frmo))
-      this.$set(row, 'frtiText', secondsFormat(row.frti))
+      this.$set(row, 'frtiText', minutesFormat(row.frti))
       this.$set(row, 'tomoText', numToMon(row.tomo))
-      this.$set(row, 'totiText', secondsFormat(row.toti))
+      this.$set(row, 'totiText', minutesFormat(row.toti))
     },
     getRowData(row) {
-      return cloneObjByKeys(row, ['rnum', 'chnl', 'stat', 'frmo', 'frda', 'frti', 'tomo', 'toda', 'toti'])
+      const data = cloneObjByKeys(row, ['rnum', 'chnl', 'stat', 'frmo', 'frda', 'frti', 'tomo', 'toda', 'toti'])
+      for (var key in data) {
+        if (isNumeric(data[key])) {
+          data[key] = parseInt(data[key])
+        }
+      }
+      return data
     },
     getData() {
       this.loading = true
@@ -249,8 +256,8 @@ export default {
     saveFormDialog() {
       const {formDialog} = this
       const d1 = formDialog.data
-      d1.frti = timeToSeconds(`${d1.frhr}:${d1.frmi}`)
-      d1.toti = timeToSeconds(`${d1.tohr}:${d1.tomi}`)
+      d1.frti = timeToMinutes(`${d1.frhr}:${d1.frmi}`)
+      d1.toti = timeToMinutes(`${d1.tohr}:${d1.tomi}`)
       if (compareNumberArray([d1.frmo, d1.frda, d1.frti], [d1.tomo, d1.toda, d1.toti]) >= 0) {
         this.$alert(`To time must be bigger than from time`)
         return

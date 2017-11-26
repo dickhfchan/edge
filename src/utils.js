@@ -290,6 +290,18 @@ export function timeToSeconds (time) {
   const [h, m] = time.split(':')
   return h * 3600 + m * 60
 }
+export function minutesFormat (mins) {
+  const h = Math.floor(mins / 60)
+  const m = Math.floor(mins % 60)
+  const hh = h < 10 ? `0${h}` : h.toString()
+  const mm = m < 10 ? `0${m}` : m.toString()
+  return `${hh}:${mm}`
+}
+
+export function timeToMinutes (time) {
+  const [h, m] = time.split(':').map(v => parseInt(v))
+  return h * 60 + m
+}
 
 export const numDayMapping = {
   1: 'Monday',

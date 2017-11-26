@@ -54,6 +54,9 @@ export default {
         this.searchDt.close()
         this.searchDt = null
       }
+      if (this.chart1) {
+        this.clearChart(this.chart1)
+      }
       this.rows = null
       let i = 0
       const sdate = resolveDate(this.startDate.time)
@@ -63,7 +66,9 @@ export default {
         toyr: edate.year, tomo: edate.month, toda: edate.date, tohr: edate.hour, tomi: edate.minute,
       }, (data) => {
         if (i > 0) {
-          this.rows = []
+          if (this.rows == null) {
+            this.rows = []  
+          }
           data.trds.forEach(item => {
             const row = {
               originalData: item,
@@ -135,6 +140,13 @@ export default {
           dataset.data.push(row[dataset.label])
         })
       }
+      chart.update()
+    },
+    clearChart(chart) {
+      chart.data.labels = []
+      chart.data.datasets.forEach(dataset => {
+        dataset.data = []
+      })
       chart.update()
     },
   },
