@@ -55,7 +55,8 @@ export default {
         this.searchDt = null
       }
       if (this.chart1) {
-        this.clearChart(this.chart1)
+        this.chart1.destroy()
+        this.chart1 = null
       }
       this.rows = null
       let i = 0
@@ -67,7 +68,7 @@ export default {
       }, (data) => {
         if (i > 0) {
           if (this.rows == null) {
-            this.rows = []  
+            this.rows = []
           }
           data.trds.forEach(item => {
             const row = {
@@ -81,16 +82,18 @@ export default {
             row.formattedTime = format(new Date(row.stmp * 1000), 'mm:ss')
             this.rows.push(row)
           })
-          this.oneRowsPushed(data.trds.length)
+          this.oneRowsPushed(this.rows.length - data.trds.length, data.trds.length)
         }
         i++
       })
     },
-    oneRowsPushed(length) {
-      if (!this.chart1) {
-        this.renderChart1()
-      }
-      this.updateChart1WhenOneRowPushed(length)
+    oneRowsPushed(start, length) {
+      this.$nextTick(() => {
+        if (!this.chart1) {
+          this.renderChart1()
+        }
+        this.updateChart1WhenOneRowPushed(start, length)
+      })
     },
     renderChart1() {
       const chartColors = {
@@ -129,24 +132,17 @@ export default {
         },
       })
     },
-    updateChart1WhenOneRowPushed(newRowLength) {
+    updateChart1WhenOneRowPushed(start, newRowLength) {
       const chart = this.chart1
       // update data
-      const len = this.rows.length
-      for (let i = len - newRowLength; i < len; i++) {
+      const end = start + newRowLength
+      for (let i = start; i < end; i++) {
         const row = this.rows[i]
         chart.data.labels.push(row.formattedTime)
         chart.data.datasets.forEach((dataset, i) => {
           dataset.data.push(row[dataset.label])
         })
       }
-      chart.update()
-    },
-    clearChart(chart) {
-      chart.data.labels = []
-      chart.data.datasets.forEach(dataset => {
-        dataset.data = []
-      })
       chart.update()
     },
   },
