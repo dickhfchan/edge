@@ -191,7 +191,7 @@ export default {
     // init
     const t = window.localStorage.getItem('user')
     let user = t && JSON.parse(t)
-    if (!user.expired_at || user.expired_at <= new Date().getTime()) {
+    if (!user || !user.expired_at || user.expired_at <= new Date().getTime()) {
       user = null
     } else {
       setInterval(() => {
